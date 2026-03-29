@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
 
 function FadeInSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -112,38 +114,7 @@ export default function LandingPage() {
         </svg>
       </div>
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between max-w-6xl mx-auto px-6 py-6">
-        <Link href="/landing" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <span className="text-lg font-bold text-gray-100">SaaS Starter</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="#features" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">
-            Features
-          </Link>
-          <Link href="#included" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">
-            Included
-          </Link>
-          <Link href="#stack" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">
-            Tech Stack
-          </Link>
-          <Link
-            href="/login"
-            className="text-sm text-gray-300 hover:text-white transition-colors px-4 py-2"
-          >
-            Live Demo
-          </Link>
-          <Link
-            href="https://github.com"
-            className="text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2 rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transition-all duration-200"
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero */}
       <section className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-24 md:pt-28 md:pb-36 text-center">
@@ -337,36 +308,7 @@ export default function LandingPage() {
         </FadeInSection>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/[0.06] mt-12">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                <span className="text-white font-bold text-xs">S</span>
-              </div>
-              <span className="font-semibold text-gray-200">SaaS Starter</span>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
-              <Link href="#features" className="hover:text-gray-300 transition-colors">Features</Link>
-              <Link href="#included" className="hover:text-gray-300 transition-colors">Included</Link>
-              <Link href="#stack" className="hover:text-gray-300 transition-colors">Tech Stack</Link>
-              <Link href="/blog" className="hover:text-gray-300 transition-colors">Blog</Link>
-              <Link href="/login" className="hover:text-gray-300 transition-colors">Demo</Link>
-            </div>
-
-            <p className="text-xs text-gray-600">
-              MIT License. Build whatever you want.
-            </p>
-          </div>
-          <div className="text-center mt-8">
-            <p className="text-xs text-gray-600">
-              &copy; {new Date().getFullYear()} SaaS Starter Kit. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

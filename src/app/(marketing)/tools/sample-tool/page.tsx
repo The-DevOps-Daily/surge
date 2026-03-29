@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import {
   BarChart,
   Bar,
@@ -28,21 +30,7 @@ export default function SampleToolPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Nav */}
-      <nav className="flex items-center justify-between max-w-4xl mx-auto px-6 py-6">
-        <Link href="/landing" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <span className="text-lg font-bold text-gray-100">SaaS App</span>
-        </Link>
-        <Link
-          href="/register"
-          className="text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2 rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-200"
-        >
-          Sign Up Free
-        </Link>
-      </nav>
+      <MarketingNav />
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-100 mb-3">
@@ -190,6 +178,8 @@ export default function SampleToolPage() {
           </Link>
         </div>
       </div>
+
+      <MarketingFooter />
     </div>
   );
 }

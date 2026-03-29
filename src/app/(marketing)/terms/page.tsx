@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,21 +17,7 @@ export default function TermsPage() {
         <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-teal-500/[0.03] rounded-full blur-[128px]" />
       </div>
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between max-w-6xl mx-auto px-6 py-6">
-        <Link href="/landing" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <span className="text-lg font-bold text-gray-100">SaaS App</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-gray-300 hover:text-white transition-colors px-4 py-2">Log in</Link>
-          <Link href="/register" className="text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2 rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transition-all duration-200">
-            Start Free
-          </Link>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Content */}
       <div className="relative z-10 max-w-3xl mx-auto px-6 pt-12 pb-24">
@@ -147,19 +135,7 @@ export default function TermsPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} SaaS App</p>
-          <div className="flex gap-6 text-xs text-gray-500">
-            <Link href="/landing" className="hover:text-gray-300 transition-colors">Home</Link>
-            <Link href="/blog" className="hover:text-gray-300 transition-colors">Blog</Link>
-            <Link href="/pricing" className="hover:text-gray-300 transition-colors">Pricing</Link>
-            <Link href="/terms" className="hover:text-gray-300 transition-colors">Terms</Link>
-            <Link href="/privacy" className="hover:text-gray-300 transition-colors">Privacy</Link>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

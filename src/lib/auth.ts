@@ -11,10 +11,6 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
-// NOTE: Rate limiting for login is handled at the NextAuth route level.
-// The authorize callback does not have access to the raw Request for IP extraction.
-// Consider adding rate limiting middleware in front of /api/auth/callback/credentials
-// using the rateLimit utility from "@/lib/rate-limit".
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -47,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),
@@ -58,17 +55,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as Record<string, unknown>).role as string || "user";
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true },
-        });
-        session.user.role = dbUser?.role || "user";
+        session.user.role = (token.role as string) || "user";
       }
       return session;
     },
