@@ -1,0 +1,12 @@
+// Production schema - PostgreSQL
+// To use: copy this file to schema.prisma before deploying
+// Or set DATABASE_URL to a PostgreSQL connection string
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// The rest of the schema is identical to the SQLite version.
+// Only the provider and any SQLite-specific types change.
+// See schema.prisma for the full model definitions.
