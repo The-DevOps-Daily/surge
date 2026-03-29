@@ -29,6 +29,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // Admin routes handle their own role check in the admin layout
   return NextResponse.next();
 }
 

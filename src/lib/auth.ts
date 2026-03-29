@@ -1,7 +1,16 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      role: string;
+    } & DefaultSession["user"];
+  }
+}
 // NOTE: Rate limiting for login is handled at the NextAuth route level.
 // The authorize callback does not have access to the raw Request for IP extraction.
 // Consider adding rate limiting middleware in front of /api/auth/callback/credentials
@@ -55,6 +64,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        session.user.role = dbUser?.role || "user";
       }
       return session;
     },
