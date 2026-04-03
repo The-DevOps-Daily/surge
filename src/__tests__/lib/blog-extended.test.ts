@@ -1,10 +1,18 @@
 import { describe, it, expect } from "vitest";
+import fs from "fs";
+import path from "path";
 import { getAllPosts } from "@/lib/blog";
 
+const BLOG_DIR = path.join(process.cwd(), "content/blog");
+const blogFiles = fs.existsSync(BLOG_DIR)
+  ? fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith(".md"))
+  : [];
+
 describe("blog posts", () => {
-  it("getAllPosts returns 10 posts", () => {
+  it("getAllPosts returns all posts", () => {
     const posts = getAllPosts();
-    expect(posts).toHaveLength(10);
+    expect(posts).toHaveLength(blogFiles.length);
+    expect(posts.length).toBeGreaterThan(0);
   });
 
   it("each post has coverEmoji", () => {
