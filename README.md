@@ -11,7 +11,7 @@ Surge is a production-ready Next.js SaaS starter kit with authentication, paymen
 
 ---
 
-## Features
+## ✨ Features
 
 - **Authentication** - NextAuth v5 with credentials provider, JWT sessions, registration toggle, forgot/reset password, account deletion, and rate limiting
 - **Stripe Payments** - Checkout sessions, customer portal, webhook handling, tier-based feature gating, and configurable pricing
@@ -26,7 +26,7 @@ Surge is a production-ready Next.js SaaS starter kit with authentication, paymen
 
 ---
 
-## Tech Stack
+## 🧰 Tech Stack
 
 | Category         | Technology                         |
 |------------------|------------------------------------|
@@ -45,7 +45,7 @@ Surge is a production-ready Next.js SaaS starter kit with authentication, paymen
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -85,7 +85,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 
 ---
 
-## Environment Variables
+## 🔐 Environment Variables
 
 Copy `.env.example` to `.env` and fill in your values:
 
@@ -106,7 +106,7 @@ Copy `.env.example` to `.env` and fill in your values:
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
@@ -133,7 +133,7 @@ scripts/            # Server setup and deployment scripts
 
 ---
 
-## Deployment
+## 🚢 Deployment
 
 ### Docker Compose
 
@@ -164,7 +164,7 @@ Deploy with one click or connect your GitHub repository. Set the environment var
 
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
