@@ -1,5 +1,5 @@
 {
-  "name": "saas-starter",
+  "name": "surge",
   "version": "0.1.0",
   "description": "Production-ready SaaS starter kit with Next.js, Stripe, and auth",
   "private": true,

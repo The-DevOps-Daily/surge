@@ -1,10 +1,10 @@
 #!/bin/bash
-# Initial server setup for Net Worth Tracker
+# Initial server setup for Surge
 # Run this on a fresh DigitalOcean droplet (Ubuntu 24.04)
 
 set -e
 
-echo "=== Net Worth Tracker - Server Setup ==="
+echo "=== Surge - Server Setup ==="
 
 # Install Docker
 if ! command -v docker &> /dev/null; then
@@ -22,8 +22,8 @@ if ! docker compose version &> /dev/null; then
 fi
 
 # Create app directory
-mkdir -p /opt/networth-tracker
-cd /opt/networth-tracker
+mkdir -p /opt/surge
+cd /opt/surge
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then
@@ -49,7 +49,7 @@ NEXT_PUBLIC_ANALYTICS_ID=
 ENVEOF
 
   echo ""
-  echo "IMPORTANT: Edit /opt/networth-tracker/.env and set:"
+  echo "IMPORTANT: Edit /opt/surge/.env and set:"
   echo "  - POSTGRES_PASSWORD (random string)"
   echo "  - NEXTAUTH_SECRET (random string)"
   echo "  - NEXTAUTH_URL (your domain)"

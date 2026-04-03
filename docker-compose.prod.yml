@@ -3,24 +3,24 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: networth
-      POSTGRES_USER: networth
+      POSTGRES_DB: surge
+      POSTGRES_USER: surge
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U networth"]
+      test: ["CMD-SHELL", "pg_isready -U surge"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY:-user/networth-tracker}:latest
+    image: ghcr.io/${GITHUB_REPOSITORY:-user/surge}:latest
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://networth:${POSTGRES_PASSWORD}@db:5432/networth
+      DATABASE_URL: postgresql://surge:${POSTGRES_PASSWORD}@db:5432/surge
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       AUTH_TRUST_HOST: "true"

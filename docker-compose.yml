@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: networth
-      POSTGRES_USER: networth
+      POSTGRES_DB: surge
+      POSTGRES_USER: surge
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U networth"]
+      test: ["CMD-SHELL", "pg_isready -U surge"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,7 +22,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://networth:${POSTGRES_PASSWORD:-changeme}@db:5432/networth
+      DATABASE_URL: postgresql://surge:${POSTGRES_PASSWORD:-changeme}@db:5432/surge
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       AUTH_TRUST_HOST: "true"
