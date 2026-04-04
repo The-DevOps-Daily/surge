@@ -42,12 +42,17 @@ export async function middleware(req: NextRequest) {
   ];
 
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
-  if (isPublic) {
-    return NextResponse.next();
-  }
+  const isRoot = pathname === "/";
 
-  // Root path is the landing page (always public)
-  if (pathname === "/") {
+  if (isPublic || isRoot) {
+    // Redirect logged-in users away from auth pages
+    const authPages = ["/login", "/register"];
+    if (authPages.includes(pathname)) {
+      const session = await auth();
+      if (session) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+    }
     return NextResponse.next();
   }
 
