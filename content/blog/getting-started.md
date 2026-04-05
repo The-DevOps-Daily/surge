@@ -9,7 +9,16 @@ coverEmoji: "🚀"
 
 ## Welcome to Your SaaS Starter
 
+<div class="stat-card">
+<div class="stat-number">5 min</div>
+<div class="stat-label">From clone to running app with auth, payments, and admin dashboard</div>
+</div>
+
 This is a sample blog post. Replace it with your own content.
+
+<div class="key-point">
+Surge includes authentication, Stripe payments, an admin dashboard, blog engine, and a dark glassmorphism UI out of the box. Just clone, configure, and start building your product.
+</div>
 
 ### What is included
 
