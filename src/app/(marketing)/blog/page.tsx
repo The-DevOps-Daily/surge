@@ -46,11 +46,11 @@ export default function BlogIndexPage() {
         {posts.length === 0 ? (
           <p className="text-center text-gray-500">No posts yet. Check back soon.</p>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-12">
             {/* Featured Post */}
             {featuredPost && (
-              <Link href={`/blog/${featuredPost.slug}`}>
-                <article className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/[0.08] p-8 hover:bg-white/[0.07] hover:border-white/[0.12] transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5">
+              <Link href={`/blog/${featuredPost.slug}`} className="block mb-8">
+                <article className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-xl rounded-2xl border border-white/[0.08] p-8 md:p-10 hover:bg-white/[0.07] hover:border-white/[0.12] transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5">
                   <div className="flex flex-col md:flex-row md:items-start gap-6">
                     {featuredPost.coverEmoji && (
                       <div className="text-6xl md:text-7xl flex-shrink-0">{featuredPost.coverEmoji}</div>

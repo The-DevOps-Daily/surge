@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: Props) {
       <MarketingNav />
 
       {/* Hero Section */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 pt-8 pb-4">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-8 pb-4">
         {/* Back link */}
         <Link
           href="/blog"
@@ -111,9 +111,10 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 leading-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
             {post.title}
           </h1>
+          <p className="text-gray-400 text-lg leading-relaxed mb-6">{post.excerpt}</p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
