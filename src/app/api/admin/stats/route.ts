@@ -84,12 +84,24 @@ export async function GET() {
     },
   });
 
+  const emailSubscribers = await prisma.user.count({
+    where: { emailReports: true },
+  });
+
+  const emailSubscriberList = await prisma.user.findMany({
+    where: { emailReports: true },
+    select: { id: true, email: true, name: true, tier: true },
+    orderBy: { email: "asc" },
+  });
+
   return NextResponse.json({
     totalUsers,
     userGrowth,
     proSubscribers,
     familySubscribers,
     mrr,
+    emailSubscribers,
+    emailSubscriberList,
     signupsByDay,
     tierDistribution,
     recentSignups,

@@ -19,6 +19,8 @@ interface AdminStats {
   proSubscribers: number;
   familySubscribers: number;
   mrr: number;
+  emailSubscribers: number;
+  emailSubscriberList: { id: string; email: string; name: string | null; tier: string }[];
   signupsByDay: { date: string; count: number }[];
   tierDistribution: { name: string; value: number }[];
   recentSignups: {
@@ -72,19 +74,20 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           label="Total Users"
           value={stats.totalUsers}
           growth={stats.userGrowth}
         />
         <StatCard label="Pro Subscribers" value={stats.proSubscribers} />
-        <StatCard label="Family Subscribers" value={stats.familySubscribers} />
+        <StatCard label="Team Subscribers" value={stats.familySubscribers} />
         <StatCard
           label="MRR"
           value={`$${stats.mrr.toFixed(2)}`}
           isCurrency
         />
+        <StatCard label="Email Subscribers" value={stats.emailSubscribers || 0} />
       </div>
 
       {/* Charts */}
@@ -206,6 +209,42 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+      {/* Email Subscribers */}
+      {stats.emailSubscriberList && stats.emailSubscriberList.length > 0 && (
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/[0.06]">
+            <h2 className="text-sm font-semibold text-gray-300">
+              Email Report Subscribers ({stats.emailSubscriberList.length})
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-gray-500 border-b border-white/[0.06]">
+                  <th className="px-6 py-3 font-medium">Email</th>
+                  <th className="px-6 py-3 font-medium">Name</th>
+                  <th className="px-6 py-3 font-medium">Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.emailSubscriberList.map((sub) => (
+                  <tr key={sub.id} className="border-b border-white/[0.03]">
+                    <td className="px-6 py-3 text-gray-300">{sub.email}</td>
+                    <td className="px-6 py-3 text-gray-400">{sub.name || "-"}</td>
+                    <td className="px-6 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        sub.tier === "pro" ? "bg-violet-500/20 text-violet-400" :
+                        sub.tier === "family" ? "bg-teal-500/20 text-teal-400" :
+                        "bg-gray-500/20 text-gray-400"
+                      }`}>{sub.tier}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

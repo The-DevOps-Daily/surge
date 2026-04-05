@@ -30,6 +30,7 @@ export async function middleware(req: NextRequest) {
     "/reset-password",
     "/api/auth/",
     "/api/stripe/webhook",
+    "/api/unsubscribe",
     "/blog",
     "/share",
     "/tools",

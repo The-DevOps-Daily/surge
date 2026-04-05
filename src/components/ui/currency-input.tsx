@@ -43,7 +43,10 @@ export function CurrencyInput({
       const rawBefore = stripCommas(displayValue);
       const rawAfter = stripCommas(input.value);
 
+      // Cap at 999,999,999,999 (under 1 trillion)
       if (rawAfter === "" || /^\d*\.?\d*$/.test(rawAfter)) {
+        const num = parseFloat(rawAfter);
+        if (num > 999999999999) return;
         onChange(rawAfter);
 
         // Restore cursor position accounting for added/removed commas
