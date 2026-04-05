@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { Resend } from "resend";
 
-// Use generic types to avoid strict SDK type mismatches across versions
 interface StripeSubscription {
   id: string;
   status: string;
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       const subscriptionId = session.subscription;
       const customerId = session.customer || "";
 
-      const subResponse = await stripe.subscriptions.retrieve(subscriptionId);
+      const subResponse = await getStripe().subscriptions.retrieve(subscriptionId);
       const subscription = subResponse as unknown as StripeSubscription;
       const priceId = subscription.items.data[0]?.price.id;
       const tier = getTierFromPriceId(priceId);
@@ -65,7 +65,9 @@ export async function POST(req: Request) {
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscriptionId,
           tier,
-          tierExpiresAt: new Date(subscription.current_period_end * 1000),
+          tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
       break;
@@ -86,7 +88,9 @@ export async function POST(req: Request) {
           where: { id: user.id },
           data: {
             tier,
-            tierExpiresAt: new Date(subscription.current_period_end * 1000),
+            tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
         });
       }
@@ -122,10 +126,28 @@ export async function POST(req: Request) {
       });
       if (!user) break;
 
-      console.warn(
-        `[stripe] invoice.payment_failed for user ${user.id} (${user.email})`
-      );
-      // TODO: send payment-failed notification via Resend when configured
+      console.warn(`[stripe] invoice.payment_failed for user ${user.id} (${user.email})`);
+
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || "Surge <noreply@example.com>",
+          to: user.email,
+          subject: "Payment failed - action needed",
+          html: `
+            <div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 32px 20px;">
+              <h2 style="color: #111; margin-bottom: 16px;">Payment failed</h2>
+              <p style="color: #666; line-height: 1.6;">
+                We were unable to process your latest payment.
+                Please update your payment method to keep your subscription active.
+              </p>
+              <a href="${process.env.NEXTAUTH_URL}/billing" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 16px;">
+                Update Payment Method
+              </a>
+            </div>
+          `,
+        }).catch((err) => console.error("[stripe] Failed to send payment-failed email:", err));
+      }
       break;
     }
 
@@ -140,15 +162,15 @@ export async function POST(req: Request) {
       });
       if (!user) break;
 
-      const subResponse = await stripe.subscriptions.retrieve(
-        invoice.subscription
-      );
+      const subResponse = await getStripe().subscriptions.retrieve(invoice.subscription);
       const subscription = subResponse as unknown as StripeSubscription;
 
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          tierExpiresAt: new Date(subscription.current_period_end * 1000),
+          tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
       break;

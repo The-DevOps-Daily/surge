@@ -41,7 +41,7 @@ const tiers = [
     ],
     notIncluded: [],
     cta: "Get Pro",
-    href: "/register",
+    href: "/billing?plan=pro",
     highlighted: true,
   },
   {
@@ -58,7 +58,7 @@ const tiers = [
     ],
     notIncluded: [],
     cta: "Get Team",
-    href: "/register",
+    href: "/billing?plan=family",
     highlighted: false,
   },
 ];

@@ -22,12 +22,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const checkoutSession = await createCheckoutSession({
-    userId: user.id,
-    email: user.email,
-    priceId,
-    customerId: user.stripeCustomerId || undefined,
-  });
+  try {
+    const checkoutSession = await createCheckoutSession({
+      userId: user.id,
+      email: user.email,
+      priceId,
+      customerId: user.stripeCustomerId || undefined,
+    });
 
-  return NextResponse.json({ url: checkoutSession.url });
+    return NextResponse.json({ url: checkoutSession.url });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("[stripe/checkout] Failed:", { priceId, userId: user.id, error: message });
+    return NextResponse.json({ error: `Checkout failed: ${message}` }, { status: 400 });
+  }
 }

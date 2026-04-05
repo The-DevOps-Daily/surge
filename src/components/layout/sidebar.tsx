@@ -9,6 +9,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   // Add your nav items here:
   // { href: "/your-page", label: "Your Page", icon: "📋" },
+  { href: "/billing", label: "Billing", icon: "🧾" },
   { href: "/settings", label: "Settings", icon: "⚙️" },
 ];
 
