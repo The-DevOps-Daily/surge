@@ -65,7 +65,9 @@ export async function POST(req: Request) {
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscriptionId,
           tier,
-          tierExpiresAt: new Date(subscription.current_period_end * 1000),
+          tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
       break;
@@ -86,7 +88,9 @@ export async function POST(req: Request) {
           where: { id: user.id },
           data: {
             tier,
-            tierExpiresAt: new Date(subscription.current_period_end * 1000),
+            tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
         });
       }
@@ -164,7 +168,9 @@ export async function POST(req: Request) {
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          tierExpiresAt: new Date(subscription.current_period_end * 1000),
+          tierExpiresAt: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
       break;

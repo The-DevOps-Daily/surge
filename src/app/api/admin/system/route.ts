@@ -13,7 +13,7 @@ export async function GET() {
   // Database connection check
   let dbConnected = false;
   try {
-    await prisma.$queryRawUnsafe("SELECT 1");
+    await prisma.$queryRaw`SELECT 1`;
     dbConnected = true;
   } catch {
     dbConnected = false;
