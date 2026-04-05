@@ -28,7 +28,7 @@ interface FeatureRow {
 
 // TODO: Replace with your actual feature comparison
 const features: FeatureRow[] = [
-  { feature: "Price", values: ["Free forever", "$14.99/mo", "$9.99/mo", "$19.99/mo"] },
+  { feature: "Price", values: ["Free plan available", "$14.99/mo", "$9.99/mo", "$19.99/mo"] },
   { feature: "Core Feature", values: [true, true, true, true] },
   { feature: "Advanced Feature", values: [true, false, true, false] },
   { feature: "Privacy First", values: [true, false, false, false] },

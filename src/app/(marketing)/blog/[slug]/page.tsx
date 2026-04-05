@@ -156,7 +156,7 @@ export default async function BlogPostPage({ params }: Props) {
                 Ready to get started?
               </h3>
               <p className="text-sm text-gray-400 mb-6">
-                Start building your financial picture today. Free forever, no credit card required.
+                Start building your financial picture today. Free to start, no credit card required.
               </p>
               <Link
                 href="/register"
