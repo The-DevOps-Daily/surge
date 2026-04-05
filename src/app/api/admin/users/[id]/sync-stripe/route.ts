@@ -21,11 +21,18 @@ export async function POST(
 
   try {
     const stripe = getStripe();
-    const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+    const subResponse = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+    const subscription = subResponse as unknown as {
+      status: string;
+      current_period_end: number;
+      items: { data: Array<{ price: { id: string } }> };
+    };
 
     const priceId = subscription.items.data[0]?.price.id;
     const tier = priceId === process.env.STRIPE_FAMILY_PRICE_ID ? "family" : "pro";
-    const tierExpiresAt = new Date(subscription.current_period_end * 1000);
+    const tierExpiresAt = subscription.current_period_end
+      ? new Date(subscription.current_period_end * 1000)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const isActive = subscription.status === "active" || subscription.status === "trialing";
 
