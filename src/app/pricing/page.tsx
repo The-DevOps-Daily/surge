@@ -4,64 +4,9 @@ import Link from "next/link";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 
-// TODO: Replace with your actual pricing tiers
-const tiers = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    description: "Perfect for getting started",
-    features: [
-      "Core features",
-      "Basic dashboard",
-      "Community support",
-    ],
-    notIncluded: [
-      "Advanced features",
-      "CSV & JSON export",
-      "Monthly reports",
-      "Priority support",
-    ],
-    cta: "Start Free",
-    href: "/register",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "$9",
-    period: "/month",
-    description: "For power users",
-    features: [
-      "Everything in Free",
-      "Unlimited usage",
-      "Advanced features",
-      "CSV & JSON export",
-      "Monthly reports",
-      "Priority support",
-    ],
-    notIncluded: [],
-    cta: "Get Pro",
-    href: "/billing?plan=pro",
-    highlighted: true,
-  },
-  {
-    name: "Team",
-    price: "$29",
-    period: "/month",
-    description: "For teams and organizations",
-    features: [
-      "Everything in Pro",
-      "Multiple seats",
-      "Shared dashboards",
-      "Admin controls",
-      "Dedicated support",
-    ],
-    notIncluded: [],
-    cta: "Get Team",
-    href: "/billing?plan=family",
-    highlighted: false,
-  },
-];
+import { PLANS } from "@/lib/pricing";
+
+const tiers = Object.values(PLANS);
 
 const faqJsonLd = {
   "@context": "https://schema.org",

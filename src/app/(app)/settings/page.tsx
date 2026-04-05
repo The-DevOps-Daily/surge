@@ -424,14 +424,14 @@ export default function SettingsPage() {
                 onClick={() => handleCheckout("price_pro_placeholder")}
                 disabled={!!loadingCheckout}
               >
-                {loadingCheckout === "price_pro_placeholder" ? "Loading..." : "Upgrade to Pro - $9/mo"}
+                {loadingCheckout === "price_pro_placeholder" ? "Loading..." : "Upgrade to Pro"}
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => handleCheckout("price_family_placeholder")}
                 disabled={!!loadingCheckout}
               >
-                {loadingCheckout === "price_family_placeholder" ? "Loading..." : "Get Team - $29/mo"}
+                {loadingCheckout === "price_family_placeholder" ? "Loading..." : "Get Team"}
               </Button>
             </div>
           )}

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import Link from "next/link";
+import { PLANS } from "@/lib/pricing";
 
 interface TierInfo {
   tier: string;
@@ -244,7 +245,7 @@ function BillingContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-white/[0.04] rounded-2xl border border-emerald-500/20 p-6">
                   <h3 className="text-lg font-bold text-gray-100 mb-1">Pro</h3>
-                  <p className="text-3xl font-bold text-emerald-400 mb-1">$9<span className="text-sm text-gray-500 font-normal">/month</span></p>
+                  <p className="text-3xl font-bold text-emerald-400 mb-1">{PLANS.pro.price}<span className="text-sm text-gray-500 font-normal">/month</span></p>
                   <p className="text-xs text-gray-500 mb-4">For serious wealth builders</p>
                   <ul className="space-y-2 text-sm text-gray-400 mb-6">
                     <li className="flex items-center gap-2">
@@ -271,7 +272,7 @@ function BillingContent() {
 
                 <div className="bg-white/[0.04] rounded-2xl border border-white/[0.06] p-6">
                   <h3 className="text-lg font-bold text-gray-100 mb-1">Family</h3>
-                  <p className="text-3xl font-bold text-teal-400 mb-1">$19<span className="text-sm text-gray-500 font-normal">/month</span></p>
+                  <p className="text-3xl font-bold text-teal-400 mb-1">{PLANS.family.price}<span className="text-sm text-gray-500 font-normal">/month</span></p>
                   <p className="text-xs text-gray-500 mb-4">Track wealth together</p>
                   <ul className="space-y-2 text-sm text-gray-400 mb-6">
                     <li className="flex items-center gap-2">
