@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "prisma": {
-    "seed": "bun prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "6",
