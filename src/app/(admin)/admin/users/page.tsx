@@ -293,6 +293,18 @@ export default function AdminUsersPage() {
                 label="Stripe Customer"
                 value={selectedUser.stripeCustomerId || "Not connected"}
               />
+              {selectedUser.stripeCustomerId && (
+                <div className="flex justify-end -mt-2 mb-1">
+                  <a
+                    href={`https://dashboard.stripe.com/test/customers/${selectedUser.stripeCustomerId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] text-violet-400 hover:text-violet-300 transition-colors"
+                  >
+                    View in Stripe &rarr;
+                  </a>
+                </div>
+              )}
               <DetailRow
                 label="Subscription"
                 value={selectedUser.stripeSubscriptionId || "None"}
@@ -313,6 +325,45 @@ export default function AdminUsersPage() {
                 label="Last Updated"
                 value={new Date(selectedUser.updatedAt).toLocaleString()}
               />
+            </div>
+
+            {/* Admin actions */}
+            <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap gap-2">
+              <button
+                onClick={async () => {
+                  const res = await fetch(`/api/admin/users/${selectedUser.id}/sync-stripe`, { method: "POST" });
+                  if (res.ok) {
+                    const data = await res.json();
+                    alert(`Synced! Tier: ${data.tier}, Expires: ${data.tierExpiresAt || "N/A"}`);
+                    handleViewDetails(selectedUser.id);
+                    fetchUsers();
+                  } else {
+                    alert("Sync failed - user may not have a Stripe subscription");
+                  }
+                }}
+                disabled={!selectedUser.stripeSubscriptionId}
+                className="text-xs px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Sync from Stripe
+              </button>
+              <button
+                onClick={() => {
+                  handleTierChange(selectedUser.id, "pro");
+                  setSelectedUser({ ...selectedUser, tier: "pro" });
+                }}
+                className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+              >
+                Set Pro
+              </button>
+              <button
+                onClick={() => {
+                  handleTierChange(selectedUser.id, "free");
+                  setSelectedUser({ ...selectedUser, tier: "free" });
+                }}
+                className="text-xs px-3 py-1.5 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors"
+              >
+                Set Free
+              </button>
             </div>
           </div>
         </div>
