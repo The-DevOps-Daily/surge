@@ -1,0 +1,87 @@
+"use client";
+
+import React, { useCallback, useRef } from "react";
+
+interface CurrencyInputProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  currency?: string;
+}
+
+function formatWithCommas(value: string): string {
+  const num = value.replace(/[^0-9.]/g, "");
+  if (!num) return "";
+
+  const parts = num.split(".");
+  const integer = parts[0];
+  const decimal = parts[1];
+
+  const formatted = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return decimal !== undefined ? `${formatted}.${decimal}` : formatted;
+}
+
+function stripCommas(value: string): string {
+  return value.replace(/,/g, "");
+}
+
+export function CurrencyInput({
+  label,
+  value,
+  onChange,
+  placeholder = "0",
+  currency = "$",
+}: CurrencyInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const displayValue = formatWithCommas(value);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const input = e.target;
+      const rawBefore = stripCommas(displayValue);
+      const rawAfter = stripCommas(input.value);
+
+      if (rawAfter === "" || /^\d*\.?\d*$/.test(rawAfter)) {
+        onChange(rawAfter);
+
+        // Restore cursor position accounting for added/removed commas
+        requestAnimationFrame(() => {
+          if (!inputRef.current) return;
+          const cursorPos = input.selectionStart || 0;
+          const newFormatted = formatWithCommas(rawAfter);
+          const commasBefore = (input.value.slice(0, cursorPos).match(/,/g) || []).length;
+          const commasAfter = (newFormatted.slice(0, cursorPos + (newFormatted.length - input.value.length)).match(/,/g) || []).length;
+          const newPos = cursorPos + (commasAfter - commasBefore);
+          inputRef.current.setSelectionRange(newPos, newPos);
+        });
+      }
+    },
+    [onChange, displayValue]
+  );
+
+  return (
+    <div className="space-y-1.5">
+      {label && (
+        <label className="block text-sm font-medium text-gray-400">
+          {label}
+        </label>
+      )}
+      <div className="relative">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
+          {currency}
+        </span>
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="decimal"
+          value={displayValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] pl-8 pr-4 py-2.5 text-gray-100 placeholder-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all duration-200 min-h-[44px] font-mono text-lg"
+        />
+      </div>
+    </div>
+  );
+}
