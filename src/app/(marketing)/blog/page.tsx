@@ -2,17 +2,13 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import type { Metadata } from "next";
+import { seo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Blog - SaaS App",
+export const metadata = seo({
+  title: "Blog",
   description: "Personal finance tips, FIRE movement guides, and wealth-building strategies.",
-  openGraph: {
-    title: "Blog - SaaS App",
-    description: "Personal finance tips, FIRE movement guides, and wealth-building strategies.",
-    images: [{ url: "/og/landing.svg", width: 1200, height: 630 }],
-  },
-};
+  path: "/blog",
+});
 
 export default function BlogIndexPage() {
   const posts = getAllPosts();

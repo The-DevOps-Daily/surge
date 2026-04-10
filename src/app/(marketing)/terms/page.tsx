@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import type { Metadata } from "next";
+import { seo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Terms of Service - SaaS App",
+export const metadata = seo({
+  title: "Terms of Service",
   description: "Terms of Service for SaaS App. Read about service usage, accounts, payments, and more.",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

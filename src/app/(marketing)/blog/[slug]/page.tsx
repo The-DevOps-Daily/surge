@@ -6,6 +6,7 @@ import { getPostBySlug, getAllSlugs, getAllPosts } from "@/lib/blog";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { TableOfContents } from "@/components/blog/table-of-contents";
+import { seo, articleJsonLd, SITE_URL } from "@/lib/seo";
 import type { Metadata } from "next";
 
 interface Props {
@@ -26,18 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${post.title} - SaaS App`,
-    description: post.excerpt,
-    authors: [{ name: post.author }],
-    openGraph: {
+    ...seo({
       title: post.title,
       description: post.excerpt,
+      path: `/blog/${slug}`,
+      ogImage: `${SITE_URL}/api/og?title=${encodeURIComponent(post.title)}&type=blog`,
       type: "article",
       publishedTime: post.date,
-      authors: [post.author],
       tags: post.tags,
-      images: [{ url: `/og/blog/${slug}.svg`, width: 1200, height: 630 }],
-    },
+    }),
+    authors: [{ name: post.author }],
   };
 }
 
@@ -54,17 +53,15 @@ export default async function BlogPostPage({ params }: Props) {
     .filter((p) => p.slug !== slug)
     .slice(0, 2);
 
-  const postUrl = `https://your-app.com/blog/${slug}`;
+  const postUrl = `${SITE_URL}/blog/${slug}`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    author: { "@type": "Person", name: post.author },
-    datePublished: post.date,
-    publisher: { "@type": "Organization", name: "SaaS App" },
-    description: post.excerpt,
-  };
+  const jsonLd = articleJsonLd(
+    post.title,
+    post.excerpt,
+    post.date,
+    post.author,
+    postUrl
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-gray-100">
