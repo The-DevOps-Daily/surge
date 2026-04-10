@@ -3,7 +3,12 @@ export const PLANS = {
   free: {
     name: "Free",
     price: "$0",
+    monthlyPrice: "$0",
+    yearlyPrice: "$0",
+    monthlyPriceNum: 0,
+    yearlyPriceNum: 0,
     period: "forever",
+    yearlySavings: "",
     description: "Perfect for getting started",
     features: [
       "Core features",
@@ -23,7 +28,12 @@ export const PLANS = {
   pro: {
     name: "Pro",
     price: "$9",
+    monthlyPrice: "$9",
+    yearlyPrice: "$90",
+    monthlyPriceNum: 9,
+    yearlyPriceNum: 90,
     period: "/month",
+    yearlySavings: "2 months free",
     description: "For power users",
     features: [
       "Everything in Free",
@@ -41,7 +51,12 @@ export const PLANS = {
   family: {
     name: "Team",
     price: "$29",
+    monthlyPrice: "$29",
+    yearlyPrice: "$290",
+    monthlyPriceNum: 29,
+    yearlyPriceNum: 290,
     period: "/month",
+    yearlySavings: "2 months free",
     description: "For teams and organizations",
     features: [
       "Everything in Pro",
@@ -58,6 +73,12 @@ export const PLANS = {
 } as const;
 
 export type PlanKey = keyof typeof PLANS;
+
+export const TIER_LABELS: Record<string, string> = {
+  free: "Free",
+  pro: "Pro",
+  family: "Team",
+};
 
 export function getPlan(key: string) {
   return PLANS[key as PlanKey] || PLANS.free;

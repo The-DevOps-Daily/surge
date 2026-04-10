@@ -22,7 +22,10 @@ interface StripeInvoice {
 }
 
 function getTierFromPriceId(priceId: string): string {
-  if (priceId === process.env.STRIPE_FAMILY_PRICE_ID) return "family";
+  if (
+    priceId === process.env.STRIPE_FAMILY_PRICE_ID ||
+    priceId === process.env.STRIPE_FAMILY_YEARLY_PRICE_ID
+  ) return "family";
   return "pro";
 }
 

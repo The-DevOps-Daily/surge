@@ -4,18 +4,12 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import Link from "next/link";
-import { PLANS } from "@/lib/pricing";
+import { PLANS, TIER_LABELS } from "@/lib/pricing";
 
 interface TierInfo {
   tier: string;
   tierExpiresAt: string | null;
 }
-
-const TIER_LABELS: Record<string, string> = {
-  free: "Free",
-  pro: "Pro",
-  family: "Family",
-};
 
 export default function BillingPage() {
   return (
@@ -93,6 +87,7 @@ function BillingContent() {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -173,6 +168,20 @@ function BillingContent() {
     }
   };
 
+  const getProPriceId = () => {
+    if (isYearly) {
+      return process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID || "";
+    }
+    return process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || "";
+  };
+
+  const getFamilyPriceId = () => {
+    if (isYearly) {
+      return process.env.NEXT_PUBLIC_STRIPE_FAMILY_YEARLY_PRICE_ID || "";
+    }
+    return process.env.NEXT_PUBLIC_STRIPE_FAMILY_PRICE_ID || "";
+  };
+
   const isPaid = tier?.tier === "pro" || tier?.tier === "family";
 
   return (
@@ -241,59 +250,99 @@ function BillingContent() {
           {/* Upgrade Options (for free users) */}
           {!isPaid && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-100">Upgrade</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-100">Upgrade</h2>
+
+                {/* Monthly / Yearly toggle */}
+                <div className="inline-flex items-center gap-1 bg-white/[0.04] rounded-full border border-white/[0.06] p-0.5">
+                  <button
+                    onClick={() => setIsYearly(false)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                      !isYearly
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : "text-gray-400 border border-transparent hover:text-gray-300"
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setIsYearly(true)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                      isYearly
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : "text-gray-400 border border-transparent hover:text-gray-300"
+                    }`}
+                  >
+                    Yearly
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold">
+                      -2 mo
+                    </span>
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-white/[0.04] rounded-2xl border border-emerald-500/20 p-6">
-                  <h3 className="text-lg font-bold text-gray-100 mb-1">Pro</h3>
-                  <p className="text-3xl font-bold text-emerald-400 mb-1">{PLANS.pro.price}<span className="text-sm text-gray-500 font-normal">/month</span></p>
-                  <p className="text-xs text-gray-500 mb-4">For serious wealth builders</p>
+                  <h3 className="text-lg font-bold text-gray-100 mb-1">{PLANS.pro.name}</h3>
+                  <p className="text-3xl font-bold text-emerald-400 mb-1">
+                    {isYearly ? `$${Math.round(PLANS.pro.yearlyPriceNum / 12)}` : PLANS.pro.monthlyPrice}
+                    <span className="text-sm text-gray-500 font-normal">/month</span>
+                  </p>
+                  {isYearly && PLANS.pro.yearlySavings && (
+                    <p className="text-xs text-emerald-400 mb-1">
+                      {PLANS.pro.yearlyPrice} billed annually
+                      <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 font-semibold">
+                        {PLANS.pro.yearlySavings}
+                      </span>
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500 mb-4">{PLANS.pro.description}</p>
                   <ul className="space-y-2 text-sm text-gray-400 mb-6">
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Unlimited assets & snapshots
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      FIRE projections & export
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Priority support
-                    </li>
+                    {PLANS.pro.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        {f}
+                      </li>
+                    ))}
                   </ul>
                   <button
-                    onClick={() => handleCheckout(process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || "")}
+                    onClick={() => handleCheckout(getProPriceId())}
                     disabled={!!checkoutLoading}
                     className="w-full px-4 py-2.5 text-sm font-medium rounded-xl bg-emerald-500 text-white hover:bg-emerald-400 transition-colors disabled:opacity-50"
                   >
-                    {checkoutLoading ? "Redirecting..." : "Upgrade to Pro"}
+                    {checkoutLoading ? "Redirecting..." : `Upgrade to ${PLANS.pro.name}`}
                   </button>
                 </div>
 
                 <div className="bg-white/[0.04] rounded-2xl border border-white/[0.06] p-6">
-                  <h3 className="text-lg font-bold text-gray-100 mb-1">Family</h3>
-                  <p className="text-3xl font-bold text-teal-400 mb-1">{PLANS.family.price}<span className="text-sm text-gray-500 font-normal">/month</span></p>
-                  <p className="text-xs text-gray-500 mb-4">Track wealth together</p>
+                  <h3 className="text-lg font-bold text-gray-100 mb-1">{PLANS.family.name}</h3>
+                  <p className="text-3xl font-bold text-teal-400 mb-1">
+                    {isYearly ? `$${Math.round(PLANS.family.yearlyPriceNum / 12)}` : PLANS.family.monthlyPrice}
+                    <span className="text-sm text-gray-500 font-normal">/month</span>
+                  </p>
+                  {isYearly && PLANS.family.yearlySavings && (
+                    <p className="text-xs text-teal-400 mb-1">
+                      {PLANS.family.yearlyPrice} billed annually
+                      <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-teal-500/15 font-semibold">
+                        {PLANS.family.yearlySavings}
+                      </span>
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500 mb-4">{PLANS.family.description}</p>
                   <ul className="space-y-2 text-sm text-gray-400 mb-6">
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Everything in Pro
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Multiple profiles
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Family net worth view
-                    </li>
+                    {PLANS.family.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        {f}
+                      </li>
+                    ))}
                   </ul>
                   <button
-                    onClick={() => handleCheckout(process.env.NEXT_PUBLIC_STRIPE_FAMILY_PRICE_ID || "")}
+                    onClick={() => handleCheckout(getFamilyPriceId())}
                     disabled={!!checkoutLoading}
                     className="w-full px-4 py-2.5 text-sm font-medium rounded-xl border border-white/[0.1] text-gray-200 hover:bg-white/[0.06] transition-colors disabled:opacity-50"
                   >
-                    {checkoutLoading ? "Redirecting..." : "Upgrade to Family"}
+                    {checkoutLoading ? "Redirecting..." : `Upgrade to ${PLANS.family.name}`}
                   </button>
                 </div>
               </div>

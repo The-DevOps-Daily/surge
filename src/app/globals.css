@@ -330,20 +330,25 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .blog-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color: #34d399;
+}
+
+.blog-content :not(pre) > code {
   background: rgba(255, 255, 255, 0.06);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: 0.875em;
 }
 
 .blog-content pre {
   background: #0d0d1a;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem;
   overflow-x: auto;
   margin: 1.5rem 0;
+  font-size: 13px;
 }
 
 .blog-content pre code {

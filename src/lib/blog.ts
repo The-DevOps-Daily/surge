@@ -70,7 +70,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const { data, content } = matter(fileContents);
 
   const processed = await remark()
-    .use(html, { sanitize: false })
+    .use(html, { sanitize: true })
     .process(content);
   const contentHtml = processed.toString();
 
