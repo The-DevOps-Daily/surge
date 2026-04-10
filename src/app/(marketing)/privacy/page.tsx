@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import type { Metadata } from "next";
+import { seo } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy - SaaS App",
+export const metadata = seo({
+  title: "Privacy Policy",
   description: "Privacy Policy for SaaS App. Learn how we collect, use, and protect your data.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

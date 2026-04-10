@@ -1,8 +1,9 @@
 import { getAllSlugs } from '@/lib/blog';
+import { SITE_URL } from '@/lib/seo';
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://your-app.com';
+  const baseUrl = SITE_URL;
   const blogSlugs = getAllSlugs();
 
   return [
