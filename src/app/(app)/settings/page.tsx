@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
 import { CURRENCIES, type CurrencyCode } from "@/lib/currencies";
+import { TIER_LABELS } from "@/lib/pricing";
 
 interface TierInfo {
   tier: string;
@@ -15,12 +16,6 @@ interface TierInfo {
   hasStripeSubscription: boolean;
   hasStripeCustomer: boolean;
 }
-
-const TIER_LABELS: Record<string, string> = {
-  free: "Free",
-  pro: "Pro",
-  family: "Family",
-};
 
 export default function SettingsPage() {
   const { data: session } = useSession();

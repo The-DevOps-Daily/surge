@@ -29,7 +29,11 @@ export async function POST(
     };
 
     const priceId = subscription.items.data[0]?.price.id;
-    const tier = priceId === process.env.STRIPE_FAMILY_PRICE_ID ? "family" : "pro";
+    const tier =
+      priceId === process.env.STRIPE_FAMILY_PRICE_ID ||
+      priceId === process.env.STRIPE_FAMILY_YEARLY_PRICE_ID
+        ? "family"
+        : "pro";
     const tierExpiresAt = subscription.current_period_end
       ? new Date(subscription.current_period_end * 1000)
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
