@@ -7,7 +7,13 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const viewport: Viewport = {
-  themeColor: "#10b981",
+  // Match the dark-default app surface so mobile browsers blend the URL
+  // bar into the page chrome instead of flashing the previous emerald
+  // theme color on first paint.
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -49,10 +55,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#10b981" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${inter.className} antialiased bg-[#0a0a0f]`}>
+      <body className={`${inter.className} antialiased`}>
         <Analytics />
         <Providers>{children}</Providers>
       </body>

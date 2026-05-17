@@ -77,40 +77,46 @@ export function ProfileSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-white/[0.04] transition-all duration-200"
+        className="flex items-center gap-2 w-full px-3 h-9 rounded-[12px] text-sm font-medium text-[var(--ink-2)] hover:bg-[var(--surface-2)] hover:text-[var(--ink-3)] transition-colors focus-ring"
       >
-        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
-          <span className="text-[10px] font-bold text-emerald-400">
+        <div className="w-6 h-6 rounded-[8px] bg-[var(--accent-soft)] flex items-center justify-center flex-shrink-0">
+          <span className="text-[10px] font-semibold text-[var(--accent)]">
             {active?.name?.[0]?.toUpperCase() || "P"}
           </span>
         </div>
         <span className="truncate flex-1 text-left">{active?.name || "Profile"}</span>
-        <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className={`w-4 h-4 text-[var(--ink-1)] transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
         </svg>
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 mt-1 bg-[#141420] border border-white/[0.08] rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute left-0 right-0 mt-2 rounded-[14px] border border-[var(--line-2)] bg-[var(--surface-2)] shadow-[var(--shadow-3)] z-50 overflow-hidden animate-scale-in">
           {profiles.map((p) => (
             <button
               key={p.id}
               onClick={() => switchProfile(p.id)}
-              className={`flex items-center gap-2 w-full px-4 py-2.5 text-sm transition-colors ${
+              className={`flex items-center gap-2 w-full px-3.5 h-9 text-sm transition-colors ${
                 p.id === activeId
-                  ? "bg-emerald-500/10 text-emerald-400"
-                  : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200"
+                  ? "bg-[var(--accent-soft)] text-[var(--ink-3)]"
+                  : "text-[var(--ink-2)] hover:bg-[var(--surface-3)] hover:text-[var(--ink-3)]"
               }`}
             >
               <span className="truncate">{p.name}</span>
               {p.isDefault && (
-                <span className="text-[10px] text-gray-600 ml-auto">default</span>
+                <span className="text-[10px] text-[var(--ink-1)] ml-auto">default</span>
               )}
             </button>
           ))}
 
           {showAdd ? (
-            <div className="p-2 border-t border-white/[0.06]">
+            <div className="p-2 border-t border-[var(--line-1)]">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -118,12 +124,12 @@ export function ProfileSwitcher() {
                   onChange={(e) => setNewName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addProfile()}
                   placeholder="Profile name"
-                  className="flex-1 px-3 py-1.5 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-emerald-500/40"
+                  className="flex-1 h-9 px-3 rounded-[10px] border border-[var(--line-1)] bg-[var(--surface-1)] text-sm text-[var(--ink-3)] placeholder-[var(--ink-1)] focus:outline-none focus:border-[var(--accent)]"
                   autoFocus
                 />
                 <button
                   onClick={addProfile}
-                  className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-sm hover:bg-emerald-500/30 transition-colors"
+                  className="h-9 px-3 rounded-[10px] bg-[var(--accent)] text-[var(--surface-0)] text-sm hover:bg-[var(--accent-strong)] transition-colors"
                 >
                   Add
                 </button>
@@ -132,12 +138,12 @@ export function ProfileSwitcher() {
           ) : (
             <button
               onClick={() => setShowAdd(true)}
-              className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] border-t border-white/[0.06] transition-colors"
+              className="flex items-center gap-2 w-full px-3.5 h-9 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-3)] border-t border-[var(--line-1)] transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              Add Profile
+              Add profile
             </button>
           )}
         </div>

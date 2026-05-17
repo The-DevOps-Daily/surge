@@ -3,6 +3,14 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
+const PAGE = "#09090b";
+const SURFACE = "#0f0f12";
+const LINE = "rgba(255,255,255,0.08)";
+const INK_HIGH = "#fafafa";
+const INK_MID = "#a1a1aa";
+const INK_LOW = "#71717a";
+const ACCENT = "#4ade80";
+
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const title = searchParams.get("title") || "Your SaaS App";
@@ -21,80 +29,65 @@ export async function GET(request: NextRequest) {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "#0a0a0f",
+          background: PAGE,
           position: "relative",
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        {/* Grid pattern */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             display: "flex",
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
           }}
         />
 
-        {/* Gradient accent */}
         <div
           style={{
             position: "absolute",
-            top: "-200px",
+            top: "-220px",
             left: "50%",
             transform: "translateX(-50%)",
-            width: "800px",
-            height: "400px",
+            width: "900px",
+            height: "440px",
             background:
-              "radial-gradient(ellipse at center, rgba(16,185,129,0.15) 0%, transparent 70%)",
+              "radial-gradient(ellipse at center, rgba(74,222,128,0.10) 0%, transparent 65%)",
             display: "flex",
           }}
         />
 
-        {/* Bottom gradient accent */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "-100px",
-            right: "0",
-            width: "600px",
-            height: "300px",
-            background:
-              "radial-gradient(ellipse at center, rgba(20,184,166,0.08) 0%, transparent 70%)",
-            display: "flex",
-          }}
-        />
-
-        {/* Blog badge */}
         {isBlog && (
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "8px 20px",
+              gap: "10px",
+              padding: "8px 16px",
               borderRadius: "9999px",
-              background: "rgba(16,185,129,0.1)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              marginBottom: "24px",
+              background: SURFACE,
+              border: `1px solid ${LINE}`,
+              marginBottom: "28px",
             }}
           >
             <div
               style={{
-                width: "8px",
-                height: "8px",
+                width: "6px",
+                height: "6px",
                 borderRadius: "50%",
-                background: "#34d399",
+                background: ACCENT,
                 display: "flex",
               }}
             />
             <span
               style={{
-                fontSize: "18px",
-                color: "#34d399",
+                fontSize: "16px",
+                color: INK_MID,
                 fontWeight: 500,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
               }}
             >
               Blog
@@ -102,7 +95,6 @@ export async function GET(request: NextRequest) {
           </div>
         )}
 
-        {/* Title */}
         <div
           style={{
             display: "flex",
@@ -115,10 +107,11 @@ export async function GET(request: NextRequest) {
         >
           <h1
             style={{
-              fontSize: title.length > 50 ? "48px" : "64px",
-              fontWeight: 700,
-              color: "#ffffff",
-              lineHeight: 1.2,
+              fontSize: title.length > 50 ? "52px" : "68px",
+              fontWeight: 600,
+              color: INK_HIGH,
+              lineHeight: 1.15,
+              letterSpacing: "-0.02em",
               margin: 0,
               maxWidth: "1000px",
             }}
@@ -130,10 +123,10 @@ export async function GET(request: NextRequest) {
             <p
               style={{
                 fontSize: "24px",
-                color: "#9ca3af",
-                marginTop: "16px",
-                maxWidth: "800px",
-                lineHeight: 1.4,
+                color: INK_MID,
+                marginTop: "20px",
+                maxWidth: "820px",
+                lineHeight: 1.45,
               }}
             >
               {subtitle}
@@ -141,11 +134,10 @@ export async function GET(request: NextRequest) {
           )}
         </div>
 
-        {/* Bottom branding */}
         <div
           style={{
             position: "absolute",
-            bottom: "40px",
+            bottom: "44px",
             display: "flex",
             alignItems: "center",
             gap: "12px",
@@ -153,24 +145,24 @@ export async function GET(request: NextRequest) {
         >
           <div
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
-              background: "linear-gradient(135deg, #10b981, #14b8a6)",
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: INK_HIGH,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px",
-              fontWeight: 700,
-              color: "#ffffff",
+              color: PAGE,
             }}
           >
-            S
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2 2 22h20L12 2z" />
+            </svg>
           </div>
           <span
             style={{
               fontSize: "20px",
-              color: "#6b7280",
+              color: INK_LOW,
               fontWeight: 500,
             }}
           >
@@ -178,16 +170,14 @@ export async function GET(request: NextRequest) {
           </span>
         </div>
 
-        {/* Top border gradient */}
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: "20%",
-            right: "20%",
-            height: "2px",
-            background:
-              "linear-gradient(90deg, transparent, #10b981, #14b8a6, transparent)",
+            left: 0,
+            right: 0,
+            height: "1px",
+            background: LINE,
             display: "flex",
           }}
         />
@@ -196,6 +186,6 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
-    }
+    },
   );
 }

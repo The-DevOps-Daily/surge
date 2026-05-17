@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
+import {
+  emailLayout,
+  emailButton,
+  emailHeading,
+  emailParagraph,
+} from "@/lib/email-layout";
 
 interface StripeSubscription {
   id: string;
@@ -133,22 +139,26 @@ export async function POST(req: Request) {
 
       if (process.env.RESEND_API_KEY) {
         const resend = new Resend(process.env.RESEND_API_KEY);
+        const billingUrl = `${process.env.NEXTAUTH_URL || "https://example.com"}/billing`;
+        const html = emailLayout(
+          [
+            emailHeading("Payment failed"),
+            emailParagraph(
+              "We were unable to process your latest payment. Please update your payment method to keep your subscription active.",
+            ),
+            `<div style="margin-top:24px;">${emailButton(billingUrl, "Update payment method")}</div>`,
+          ].join(""),
+          {
+            preheader: "Action needed — update your payment method to keep your subscription active.",
+            appName: "SaaS App",
+          },
+        );
+
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "Surge <noreply@example.com>",
+          from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
           to: user.email,
-          subject: "Payment failed - action needed",
-          html: `
-            <div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 32px 20px;">
-              <h2 style="color: #111; margin-bottom: 16px;">Payment failed</h2>
-              <p style="color: #666; line-height: 1.6;">
-                We were unable to process your latest payment.
-                Please update your payment method to keep your subscription active.
-              </p>
-              <a href="${process.env.NEXTAUTH_URL}/billing" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 16px;">
-                Update Payment Method
-              </a>
-            </div>
-          `,
+          subject: "Payment failed — action needed",
+          html,
         }).catch((err) => console.error("[stripe] Failed to send payment-failed email:", err));
       }
       break;

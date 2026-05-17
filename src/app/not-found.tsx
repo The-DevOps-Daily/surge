@@ -2,27 +2,42 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#0a0a0f]">
-      <div className="text-center max-w-md">
-        <p className="text-6xl mb-6">🔍</p>
-        <h1 className="text-4xl font-bold text-gray-100 mb-3">404</h1>
-        <p className="text-lg text-gray-400 mb-8">
-          Page not found. The page you are looking for does not exist or has been moved.
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--surface-0)] relative overflow-hidden">
+      <div className="bg-mesh" />
+      <div className="relative z-10 text-center max-w-md w-full">
+        <p className="text-[88px] leading-none font-semibold tracking-[-0.04em] text-[var(--ink-3)] mb-3">
+          404
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium text-white bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transition-all duration-200 min-h-[44px]"
-          >
-            Go back home
-          </Link>
-        </div>
+        <h1 className="text-xl font-semibold text-[var(--ink-3)] mb-3 tracking-[-0.005em]">
+          Page not found
+        </h1>
+        <p className="text-[var(--ink-1)] mb-8 leading-relaxed">
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center h-11 px-6 rounded-[12px] bg-[var(--ink-3)] text-[var(--surface-0)] text-sm font-medium hover:opacity-90 transition-opacity focus-ring"
+        >
+          Go back home
+        </Link>
         <div className="mt-10 flex items-center justify-center gap-6 text-sm">
-          <Link href="/" className="text-emerald-400 hover:underline">
+          <Link
+            href="/dashboard"
+            className="text-[var(--ink-1)] hover:text-[var(--ink-3)] transition-colors focus-ring rounded-md"
+          >
             Dashboard
           </Link>
-          <Link href="/settings" className="text-emerald-400 hover:underline">
-            Settings
+          <Link
+            href="/pricing"
+            className="text-[var(--ink-1)] hover:text-[var(--ink-3)] transition-colors focus-ring rounded-md"
+          >
+            Pricing
+          </Link>
+          <Link
+            href="/blog"
+            className="text-[var(--ink-1)] hover:text-[var(--ink-3)] transition-colors focus-ring rounded-md"
+          >
+            Blog
           </Link>
         </div>
       </div>

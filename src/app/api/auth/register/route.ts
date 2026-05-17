@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import {
+  emailLayout,
+  emailButton,
+  emailHeading,
+  emailParagraph,
+} from "@/lib/email-layout";
 
 export async function POST(req: Request) {
   try {
@@ -69,6 +75,24 @@ export async function POST(req: Request) {
     if (process.env.RESEND_API_KEY) {
       try {
         const displayName = name || "there";
+        const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`;
+        const html = emailLayout(
+          [
+            emailHeading(`Welcome, ${displayName}.`),
+            emailParagraph(
+              "Thanks for joining SaaS App. You can start using your account right away.",
+            ),
+            emailParagraph(
+              "If you ever get stuck, just reply to this email.",
+            ),
+            `<div style="margin-top:24px;">${emailButton(dashboardUrl, "Go to dashboard")}</div>`,
+          ].join(""),
+          {
+            preheader: "Welcome to SaaS App — your account is ready.",
+            appName: "SaaS App",
+          },
+        );
+
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -78,24 +102,8 @@ export async function POST(req: Request) {
           body: JSON.stringify({
             from: process.env.RESEND_FROM_EMAIL || "SaaS App <hello@your-app.com>",
             to: [email],
-            subject: "Welcome to SaaS App!",
-            html: `
-              <div style="font-family: system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 20px;">
-                <div style="text-align: center; margin-bottom: 24px;">
-                  <div style="display: inline-block; background: #10b981; border-radius: 12px; width: 48px; height: 48px; line-height: 48px; color: white; font-weight: bold; font-size: 22px;">S</div>
-                </div>
-                <h1 style="font-size: 24px; color: #111; margin-bottom: 12px;">Welcome, ${displayName}!</h1>
-                <p style="font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 24px;">
-                  Thanks for joining SaaS App. You can start using the app right away.
-                </p>
-                <div style="text-align: center; margin-bottom: 24px;">
-                  <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px;">Go to Dashboard</a>
-                </div>
-                <p style="font-size: 13px; color: #999; text-align: center;">
-                  SaaS App - Your tagline here.
-                </p>
-              </div>
-            `,
+            subject: "Welcome to SaaS App",
+            html,
           }),
         });
       } catch (emailErr) {

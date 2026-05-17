@@ -4,29 +4,56 @@ import { LandingNav } from '@/components/landing-nav';
 
 export function MarketingNav() {
   return (
-    <nav className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-md border-b border-white/[0.04]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <span className="text-white font-bold text-sm">S</span>
+    <nav className="sticky top-0 z-50 bg-[var(--surface-0)]/85 backdrop-blur-xl border-b border-[var(--line-1)]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        {/* Logo: solid mark instead of the previous emerald gradient bubble. */}
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[8px] bg-[var(--ink-3)] text-[var(--surface-0)] flex items-center justify-center">
+            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2 2 22h20L12 2z" />
+            </svg>
           </div>
-          <span className="text-lg font-bold text-gray-100">SaaS App</span>
+          <span className="text-[15px] font-semibold text-[var(--ink-3)] tracking-tight">
+            SaaS App
+          </span>
         </Link>
 
-        {/* Desktop links */}
-        <div className="flex items-center gap-4">
-          <Link href="/pricing" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">Pricing</Link>
-          <Link href="/blog" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">Blog</Link>
-          <Link href="/compare" className="hidden sm:block text-sm text-gray-400 hover:text-gray-200 transition-colors">Compare</Link>
+        {/* Links */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/pricing"
+            className="hidden sm:inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
+          >
+            Pricing
+          </Link>
+          <Link
+            href="/blog"
+            className="hidden sm:inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
+          >
+            Blog
+          </Link>
+          <Link
+            href="/compare"
+            className="hidden sm:inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
+          >
+            Compare
+          </Link>
           <div className="hidden sm:block relative group">
-            <button className="text-sm text-gray-400 hover:text-gray-200 transition-colors">Tools</button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <div className="bg-[#1a1a2e] border border-white/[0.08] rounded-xl shadow-xl p-2 min-w-[200px]">
-                <Link href="/tools/sample-tool" className="block px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors">Growth Calculator</Link>
+            <button className="inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors">
+              Tools
+            </button>
+            <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+              <div className="bg-[var(--surface-2)] border border-[var(--line-2)] rounded-[14px] shadow-[var(--shadow-3)] p-1.5 min-w-[220px]">
+                <Link
+                  href="/tools/sample-tool"
+                  className="flex items-center h-9 px-3 text-sm text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-3)] rounded-[10px] transition-colors"
+                >
+                  Growth calculator
+                </Link>
               </div>
             </div>
           </div>
+          <span className="hidden sm:block mx-1 h-5 w-px bg-[var(--line-1)]" />
           <LandingNav />
         </div>
       </div>

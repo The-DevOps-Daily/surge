@@ -67,12 +67,12 @@ export function CurrencyInput({
   return (
     <div className="space-y-1.5">
       {label && (
-        <label className="block text-sm font-medium text-gray-400">
+        <label className="block text-xs font-medium uppercase tracking-[0.04em] text-[var(--ink-1)]">
           {label}
         </label>
       )}
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-1)] text-sm pointer-events-none">
           {currency}
         </span>
         <input
@@ -82,7 +82,7 @@ export function CurrencyInput({
           value={displayValue}
           onChange={handleChange}
           placeholder={placeholder}
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] pl-8 pr-4 py-2.5 text-gray-100 placeholder-gray-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all duration-200 min-h-[44px] font-mono text-lg"
+          className="w-full rounded-[12px] border border-[var(--line-2)] bg-[var(--surface-1)] pl-8 pr-4 h-11 text-[var(--ink-3)] placeholder-[var(--ink-1)] focus:border-[var(--accent)] focus-ring transition-colors duration-150 ease-out font-mono text-lg"
         />
       </div>
     </div>

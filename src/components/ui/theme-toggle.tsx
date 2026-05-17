@@ -3,56 +3,57 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+const buttonClasses =
+  "inline-flex h-9 w-9 items-center justify-center rounded-[10px] " +
+  "text-[var(--ink-1)] transition-colors duration-150 ease-out " +
+  "hover:bg-[var(--surface-2)] hover:text-[var(--ink-3)] focus-ring";
+
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
+  // Render a placeholder while next-themes is hydrating, sized the same as
+  // the real button so we never cause layout shift between SSR and CSR.
   if (!mounted) {
-    return (
-      <button className="p-2 rounded-xl hover:bg-white/[0.06] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
-        <div className="w-5 h-5" />
-      </button>
-    );
+    return <button aria-hidden className={buttonClasses + " opacity-0 pointer-events-none"} />;
   }
 
-  const isDark = theme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-2 rounded-xl hover:bg-white/[0.06] transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center group"
+      className={buttonClasses}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      title={`Switch to ${isDark ? "light" : "dark"} mode`}
     >
       {isDark ? (
+        // Sun: hover tints amber, intentional restraint on the accent.
         <svg
-          className="w-5 h-5 text-gray-400 group-hover:text-amber-400 transition-colors duration-200"
+          className="w-4 h-4 transition-colors duration-150 hover:text-[var(--warn)]"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          strokeWidth={1.5}
+          strokeWidth={1.6}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-          />
+          <circle cx="12" cy="12" r="4" />
+          <path strokeLinecap="round" d="M12 3v2M12 19v2M5 12H3M21 12h-2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
         </svg>
       ) : (
         <svg
-          className="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors duration-200"
+          className="w-4 h-4"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          strokeWidth={1.5}
+          strokeWidth={1.6}
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+            d="M21.75 15A9.75 9.75 0 1 1 9 2.25a7.5 7.5 0 0 0 12.75 12.75Z"
           />
         </svg>
       )}

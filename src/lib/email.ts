@@ -1,5 +1,11 @@
 import { Resend } from "resend";
 import { getUnsubscribeUrl } from "@/app/api/unsubscribe/route";
+import {
+  emailLayout,
+  emailButton,
+  emailHeading,
+  emailParagraph,
+} from "@/lib/email-layout";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -16,14 +22,15 @@ interface MonthlyReportData {
 
 export async function sendMonthlyReport(
   email: string,
-  data: MonthlyReportData
+  data: MonthlyReportData,
 ) {
   if (!resend) {
     console.log("RESEND_API_KEY not configured, skipping email send");
     return null;
   }
 
-  const changePrefix = data.change >= 0 ? "+" : "";
+  const positive = data.change >= 0;
+  const changePrefix = positive ? "+" : "";
   const fmt = (amount: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -34,52 +41,56 @@ export async function sendMonthlyReport(
   const formattedNetWorth = fmt(data.netWorth);
   const formattedChange = fmt(Math.abs(data.change));
   const unsubscribeUrl = getUnsubscribeUrl(data.userId);
+  const dashboardUrl = `${process.env.NEXTAUTH_URL || "https://example.com"}/dashboard`;
+
+  const changeColor = positive ? "#16a34a" : "#dc2626";
+  const changeBg = positive
+    ? "rgba(22,163,74,0.10)"
+    : "rgba(220,38,38,0.08)";
+
+  const body = [
+    emailHeading("Your monthly summary"),
+    emailParagraph(
+      "Here's where your finances landed at the end of the month.",
+    ),
+    `<div style="margin:24px 0;padding:20px;border:1px solid #e9e9eb;border-radius:14px;background:#fafafa;">
+      <div style="font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;font-weight:500;">Net worth</div>
+      <div style="margin-top:8px;font-size:36px;font-weight:600;letter-spacing:-0.02em;color:#18181b;line-height:1.1;">${formattedNetWorth}</div>
+      <div style="margin-top:10px;display:inline-block;padding:4px 10px;border-radius:9999px;background:${changeBg};font-size:13px;font-weight:600;color:${changeColor};">${changePrefix}${formattedChange} vs last month</div>
+    </div>`,
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 24px 0;">
+      <tr>
+        <td style="width:50%;padding-right:6px;vertical-align:top;">
+          <div style="border:1px solid #e9e9eb;border-radius:12px;padding:14px 16px;">
+            <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;font-weight:500;">Assets</div>
+            <div style="margin-top:6px;font-size:18px;font-weight:600;color:#18181b;">${fmt(data.assets)}</div>
+          </div>
+        </td>
+        <td style="width:50%;padding-left:6px;vertical-align:top;">
+          <div style="border:1px solid #e9e9eb;border-radius:12px;padding:14px 16px;">
+            <div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#71717a;font-weight:500;">Liabilities</div>
+            <div style="margin-top:6px;font-size:18px;font-weight:600;color:#18181b;">${fmt(data.liabilities)}</div>
+          </div>
+        </td>
+      </tr>
+    </table>`,
+    `<div style="margin-top:8px;">${emailButton(dashboardUrl, "Open dashboard")}</div>`,
+  ].join("");
 
   const { error } = await resend.emails.send({
-    from: "Surge <noreply@example.com>",
+    from: "SaaS App <noreply@example.com>",
     to: email,
-    subject: `Your Monthly Net Worth Report - ${formattedNetWorth}`,
+    subject: `Monthly summary · ${formattedNetWorth}`,
     headers: {
       "List-Unsubscribe": `<${unsubscribeUrl}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     },
-    html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #0a0a0f; color: #f3f4f6;">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display:inline-block;background:#10b981;border-radius:12px;width:40px;height:40px;line-height:40px;color:white;font-weight:bold;font-size:18px;margin-bottom:12px;">W</div>
-          <h1 style="font-size: 24px; font-weight: bold; margin: 0;">Monthly Net Worth Report</h1>
-          <p style="color: #9ca3af; margin-top: 8px;">Here is your financial summary for last month</p>
-        </div>
-        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-          <p style="color: #9ca3af; font-size: 14px; margin: 0 0 8px;">Net Worth</p>
-          <p style="font-size: 36px; font-weight: bold; color: #10b981; margin: 0;">${formattedNetWorth}</p>
-          <p style="font-size: 14px; color: ${data.change >= 0 ? "#10b981" : "#ef4444"}; margin-top: 8px;">
-            ${changePrefix}${formattedChange} from last month
-          </p>
-        </div>
-        <div style="display: flex; gap: 16px;">
-          <div style="flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 16px;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Total Assets</p>
-            <p style="font-size: 20px; font-weight: 600; color: #10b981; margin: 4px 0 0;">${fmt(data.assets)}</p>
-          </div>
-          <div style="flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 16px;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Total Liabilities</p>
-            <p style="font-size: 20px; font-weight: 600; color: #ef4444; margin: 4px 0 0;">${fmt(data.liabilities)}</p>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 32px;">
-          <a href="${process.env.NEXTAUTH_URL || "https://example.com"}/dashboard" style="display: inline-block; background: #10b981; color: white; text-decoration: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px;">View Dashboard</a>
-        </div>
-        <div style="text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);">
-          <p style="color: #6b7280; font-size: 11px; margin: 0;">
-            You are receiving this because you enabled monthly reports in your Surge settings.
-          </p>
-          <p style="margin-top: 8px;">
-            <a href="${unsubscribeUrl}" style="color: #6b7280; font-size: 11px; text-decoration: underline;">Unsubscribe from monthly reports</a>
-          </p>
-        </div>
-      </div>
-    `,
+    html: emailLayout(body, {
+      preheader: `Net worth: ${formattedNetWorth} (${changePrefix}${formattedChange})`,
+      appName: "SaaS App",
+      footer: "You're receiving this because monthly reports are on in settings.",
+      unsubscribeUrl,
+    }),
   });
 
   if (error) {

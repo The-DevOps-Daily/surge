@@ -50,10 +50,14 @@ function ResetForm() {
 
   if (!token) {
     return (
-      <div className="text-center">
-        <p className="text-sm text-gray-400 mb-4">Invalid reset link. Please request a new one.</p>
+      <div className="text-center space-y-4">
+        <p className="text-sm text-[var(--ink-1)]">
+          Invalid reset link. Please request a new one.
+        </p>
         <Link href="/forgot-password">
-          <Button size="lg">Request Reset Link</Button>
+          <Button variant="primary" size="lg" className="w-full">
+            Request reset link
+          </Button>
         </Link>
       </div>
     );
@@ -61,16 +65,32 @@ function ResetForm() {
 
   if (done) {
     return (
-      <div className="space-y-6">
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-          <svg className="w-10 h-10 text-emerald-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <div className="space-y-5">
+        <div
+          role="status"
+          className="rounded-[14px] border border-[var(--line-2)] bg-[var(--accent-soft)] p-5 text-center"
+        >
+          <svg
+            className="w-8 h-8 text-[var(--accent)] mx-auto mb-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.6}
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="m9 12 2 2 4-4" />
           </svg>
-          <p className="text-sm text-emerald-300 font-medium">Password reset successfully!</p>
-          <p className="text-sm text-gray-400 mt-1">You can now sign in with your new password.</p>
+          <p className="text-sm font-medium text-[var(--ink-3)]">
+            Password reset
+          </p>
+          <p className="text-sm text-[var(--ink-1)] mt-1 leading-relaxed">
+            You can now sign in with your new password.
+          </p>
         </div>
         <Link href="/login">
-          <Button className="w-full" size="lg">Sign In</Button>
+          <Button variant="primary" className="w-full" size="lg">
+            Sign in
+          </Button>
         </Link>
       </div>
     );
@@ -79,7 +99,10 @@ function ResetForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-sm text-rose-300">
+        <div
+          role="alert"
+          className="rounded-[10px] border border-[var(--line-2)] bg-[var(--danger-soft)] text-[var(--danger)] text-sm px-3 py-2.5"
+        >
           {error}
         </div>
       )}
@@ -88,7 +111,8 @@ function ResetForm() {
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Min 8 characters"
+        placeholder="At least 8 characters"
+        autoComplete="new-password"
         required
       />
       <Input
@@ -97,14 +121,24 @@ function ResetForm() {
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
         placeholder="Re-enter password"
+        autoComplete="new-password"
         required
       />
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? "Resetting..." : "Reset Password"}
+      <Button
+        type="submit"
+        variant="primary"
+        className="w-full"
+        size="lg"
+        loading={loading}
+      >
+        {loading ? "Resetting..." : "Reset password"}
       </Button>
-      <p className="text-center text-sm text-gray-500">
-        <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">
-          Back to login
+      <p className="text-center text-sm text-[var(--ink-1)]">
+        <Link
+          href="/login"
+          className="text-[var(--ink-3)] hover:text-[var(--accent)] font-medium transition-colors"
+        >
+          ← Back to sign in
         </Link>
       </p>
     </form>
@@ -113,26 +147,32 @@ function ResetForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-4 relative overflow-hidden">
-      <div className="w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl absolute -top-20 -right-20" />
-      <div className="w-80 h-80 bg-teal-500/[0.08] rounded-full blur-3xl absolute -bottom-10 -left-10" />
+    <div className="min-h-screen flex items-center justify-center bg-[var(--surface-0)] p-4 relative overflow-hidden">
+      <div className="bg-mesh" />
 
-      <div className="w-full max-w-md bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-8 relative z-10 animate-scale-in shadow-2xl shadow-black/20">
+      <div className="w-full max-w-[420px] rounded-[24px] border border-[var(--line-1)] bg-[var(--surface-1)] p-8 relative z-10 animate-scale-in shadow-[var(--shadow-3)]">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] bg-[var(--surface-2)] mb-5">
+            <svg
+              className="w-5 h-5 text-[var(--ink-2)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.6}
+            >
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 1 1 8 0v3" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-100">
-            Reset Password
+          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
+            Reset password
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Enter your new password
+          <p className="text-sm text-[var(--ink-1)] mt-1.5">
+            Pick a new password for your account.
           </p>
         </div>
 
-        <Suspense fallback={<p className="text-center text-gray-500">Loading...</p>}>
+        <Suspense fallback={<p className="text-center text-[var(--ink-1)]">Loading...</p>}>
           <ResetForm />
         </Suspense>
       </div>

@@ -45,13 +45,20 @@ export async function GET(req: Request) {
 }
 
 function html(message: string): string {
+  const appUrl = process.env.NEXTAUTH_URL || "https://example.com";
   return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Unsubscribe - Surge</title></head>
-<body style="font-family:system-ui,sans-serif;max-width:500px;margin:60px auto;padding:20px;text-align:center;background:#0a0a0f;color:#f3f4f6;min-height:100vh;">
-  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:40px;">
-    <div style="display:inline-block;background:#10b981;border-radius:12px;width:48px;height:48px;line-height:48px;color:white;font-weight:bold;font-size:22px;margin-bottom:20px;">W</div>
-    <p style="font-size:16px;line-height:1.6;color:#d1d5db;">${message}</p>
-    <a href="https://example.com" style="display:inline-block;margin-top:20px;color:#10b981;text-decoration:none;font-size:14px;">Go to Surge</a>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Unsubscribe</title>
+</head>
+<body style="margin:0;background:#fafafa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#18181b;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:440px;background:#ffffff;border:1px solid #e9e9eb;border-radius:18px;padding:36px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#f4f4f5;border:1px solid #e9e9eb;margin-bottom:18px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+    </div>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">${message}</p>
+    <a href="${appUrl}" style="display:inline-block;margin-top:24px;padding:10px 20px;border-radius:12px;background:#18181b;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">Go to SaaS App</a>
   </div>
 </body></html>`;
 }
