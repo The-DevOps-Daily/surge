@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { Resend } from "resend";
 import {
   emailLayout,
   emailButton,
   emailHeading,
   emailParagraph,
 } from "@/lib/email-layout";
+import { sendEmail } from "@/lib/email";
 
 interface StripeSubscription {
   id: string;
@@ -137,30 +137,26 @@ export async function POST(req: Request) {
 
       console.warn(`[stripe] invoice.payment_failed for user ${user.id} (${user.email})`);
 
-      if (process.env.RESEND_API_KEY) {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const billingUrl = `${process.env.NEXTAUTH_URL || "https://example.com"}/billing`;
-        const html = emailLayout(
-          [
-            emailHeading("Payment failed"),
-            emailParagraph(
-              "We were unable to process your latest payment. Please update your payment method to keep your subscription active.",
-            ),
-            `<div style="margin-top:24px;">${emailButton(billingUrl, "Update payment method")}</div>`,
-          ].join(""),
-          {
-            preheader: "Action needed — update your payment method to keep your subscription active.",
-            appName: "SaaS App",
-          },
-        );
-
-        await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
-          to: user.email,
-          subject: "Payment failed — action needed",
-          html,
-        }).catch((err) => console.error("[stripe] Failed to send payment-failed email:", err));
-      }
+      const billingUrl = `${process.env.NEXTAUTH_URL || "https://example.com"}/billing`;
+      const html = emailLayout(
+        [
+          emailHeading("Payment failed"),
+          emailParagraph(
+            "We were unable to process your latest payment. Please update your payment method to keep your subscription active.",
+          ),
+          `<div style="margin-top:24px;">${emailButton(billingUrl, "Update payment method")}</div>`,
+        ].join(""),
+        {
+          preheader:
+            "Action needed — update your payment method to keep your subscription active.",
+          appName: "SaaS App",
+        },
+      );
+      await sendEmail({
+        to: user.email,
+        subject: "Payment failed — action needed",
+        html,
+      });
       break;
     }
 

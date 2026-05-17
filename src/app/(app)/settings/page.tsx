@@ -9,15 +9,8 @@ import { Input, Select } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
 import { CURRENCIES, type CurrencyCode } from "@/lib/currencies";
-import { TIER_LABELS } from "@/lib/pricing";
-
-interface TierInfo {
-  tier: string;
-  tierExpiresAt: string | null;
-  hasStripeSubscription: boolean;
-  hasStripeCustomer: boolean;
-  emailReports?: boolean;
-}
+import { TIER_LABELS, isPaidTier } from "@/lib/pricing";
+import { useTier } from "@/hooks/use-tier";
 
 const themeOptions = [
   {
@@ -61,13 +54,21 @@ export default function SettingsPage() {
   const { addToast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [tierInfo, setTierInfo] = useState<TierInfo | null>(null);
+  const { tier: tierInfo } = useTier();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [loadingCheckout, setLoadingCheckout] = useState<string | null>(null);
   const [currency, setCurrency] = useState<string>("USD");
   const [savingCurrency, setSavingCurrency] = useState(false);
   const [emailReports, setEmailReports] = useState(false);
   const [savingEmailReports, setSavingEmailReports] = useState(false);
+
+  // emailReports is owned by useTier on first load; mirror to local state so
+  // the optimistic toggle can update without re-fetching.
+  useEffect(() => {
+    if (typeof tierInfo?.emailReports === "boolean") {
+      setEmailReports(tierInfo.emailReports);
+    }
+  }, [tierInfo?.emailReports]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -78,21 +79,6 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  const fetchTier = useCallback(async () => {
-    try {
-      const res = await fetch("/api/user/tier");
-      if (res.ok) {
-        const data: TierInfo = await res.json();
-        setTierInfo(data);
-        if (typeof data.emailReports === "boolean") {
-          setEmailReports(data.emailReports);
-        }
-      }
-    } catch {
-      // Ignore
-    }
   }, []);
 
   const fetchCurrency = useCallback(async () => {
@@ -108,9 +94,8 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetchTier();
     fetchCurrency();
-  }, [fetchTier, fetchCurrency]);
+  }, [fetchCurrency]);
 
   const initials = session?.user?.name
     ? session.user.name
@@ -291,7 +276,7 @@ export default function SettingsPage() {
     }
   };
 
-  const isPaid = tierInfo?.tier === "pro" || tierInfo?.tier === "family";
+  const isPaid = isPaidTier(tierInfo?.tier);
   const proPriceId = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || "";
   const familyPriceId = process.env.NEXT_PUBLIC_STRIPE_FAMILY_PRICE_ID || "";
 

@@ -5,12 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { PLANS, TIER_LABELS } from "@/lib/pricing";
-
-interface TierInfo {
-  tier: string;
-  tierExpiresAt: string | null;
-}
+import { PLANS, TIER_LABELS, isPaidTier } from "@/lib/pricing";
+import { useTier } from "@/hooks/use-tier";
 
 export default function BillingPage() {
   return (
@@ -200,23 +196,12 @@ function BillingContent() {
   const plan = searchParams.get("plan");
   const success = searchParams.get("success");
   const canceled = searchParams.get("canceled");
-  const [tier, setTier] = useState<TierInfo | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { tier, loading, refetch } = useTier();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
   const { addToast } = useToast();
-
-  useEffect(() => {
-    fetch("/api/user/tier")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        setTier(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
 
   const handleCheckout = useCallback(
     async (priceId: string) => {
@@ -248,21 +233,17 @@ function BillingContent() {
       setShowConfetti(true);
       addToast("Welcome to Pro! Your upgrade is being processed.", "info");
       const t = setTimeout(() => setShowConfetti(false), 5000);
-      const refetch = setTimeout(() => {
-        fetch("/api/user/tier")
-          .then((res) => (res.ok ? res.json() : null))
-          .then((data) => {
-            if (data) setTier(data);
-          });
+      const refetchTimer = setTimeout(() => {
+        refetch();
       }, 3000);
       return () => {
         clearTimeout(t);
-        clearTimeout(refetch);
+        clearTimeout(refetchTimer);
       };
     } else if (canceled === "true") {
       addToast("Checkout canceled. No charges were made.", "error");
     }
-  }, [success, canceled, addToast]);
+  }, [success, canceled, addToast, refetch]);
 
   useEffect(() => {
     if (!tier || loading) return;
@@ -296,7 +277,7 @@ function BillingContent() {
     }
   };
 
-  const isPaid = tier?.tier === "pro" || tier?.tier === "family";
+  const isPaid = isPaidTier(tier?.tier);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">

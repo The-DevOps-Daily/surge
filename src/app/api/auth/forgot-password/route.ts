@@ -8,6 +8,7 @@ import {
   emailHeading,
   emailParagraph,
 } from "@/lib/email-layout";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({ where: { email } });
 
-  if (user && process.env.RESEND_API_KEY) {
+  if (user) {
     const token = randomBytes(32).toString("hex");
     const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
@@ -57,19 +58,9 @@ export async function POST(req: Request) {
       },
     );
 
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
-        to: [email],
-        subject: "Reset your password",
-        html,
-      }),
-    }).catch((err) => console.error("[forgot-password] Failed to send email:", err));
+    // sendEmail short-circuits when RESEND_API_KEY is unset; we still want to
+    // burn the reset token / set expiry above so the token table doesn't grow.
+    await sendEmail({ to: email, subject: "Reset your password", html });
   }
 
   return NextResponse.json({ success: true });
