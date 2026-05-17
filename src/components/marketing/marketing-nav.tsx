@@ -33,6 +33,12 @@ export function MarketingNav() {
             Blog
           </Link>
           <Link
+            href="/docs"
+            className="hidden sm:inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
+          >
+            Docs
+          </Link>
+          <Link
             href="/compare"
             className="hidden sm:inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
           >

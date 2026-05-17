@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.claude.com/schemas/claude-code/settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.ts || \"$CLAUDE_TOOL_FILE_PATH\" == *.tsx ]]; then npx tsc --noEmit 2>&1 | grep -v '__tests__/api/' | head -40 || true; fi",
+            "description": "Auto-tsc on TypeScript file writes (skips pre-existing Prisma mock test errors)."
+          }
+        ]
+      }
+    ]
+  }
+}

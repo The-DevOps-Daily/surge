@@ -94,3 +94,10 @@ export function getAllSlugs(): string[] {
     .filter((f) => f.endsWith(".md"))
     .map((f) => f.replace(/\.md$/, ""));
 }
+
+/** Raw markdown source — used by /blog/<slug>.md and llms-full.txt. */
+export function getPostRawMarkdown(slug: string): string | null {
+  const filePath = path.join(BLOG_DIR, `${slug}.md`);
+  if (!fs.existsSync(filePath)) return null;
+  return fs.readFileSync(filePath, "utf-8");
+}
