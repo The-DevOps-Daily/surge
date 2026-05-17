@@ -32,6 +32,7 @@ export async function middleware(req: NextRequest) {
     "/api/stripe/webhook",
     "/api/unsubscribe",
     "/blog",
+    "/docs",
     "/share",
     "/tools",
     "/terms",
@@ -39,6 +40,10 @@ export async function middleware(req: NextRequest) {
     "/compare",
     "/sitemap",
     "/robots",
+    "/llms.txt",
+    "/llms-full.txt",
+    "/api/openapi.json",
+    "/api/raw/",
     "/og/",
     "/not-found",
   ];

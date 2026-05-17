@@ -53,6 +53,49 @@ function Reveal({
   );
 }
 
+// Terminal-style mock card for the hero. Static — no animation needed, the
+// visual itself is the message: "this is what extending the kit looks like".
+function HeroTerminal() {
+  return (
+    <div className="max-w-2xl mx-auto text-left">
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] shadow-[var(--shadow-3)] overflow-hidden">
+        <div className="flex items-center gap-1.5 px-4 h-9 border-b border-[var(--line-1)] bg-[var(--surface-2)]">
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--danger)] opacity-70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--warn)] opacity-70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent)] opacity-70" />
+          <span className="ml-3 text-xs text-[var(--ink-1)] font-mono">
+            ~/my-saas › claude
+          </span>
+        </div>
+        <pre className="px-5 py-5 sm:px-6 sm:py-6 text-[12px] sm:text-[13px] leading-[1.7] font-mono text-[var(--ink-2)] overflow-x-auto whitespace-pre">
+{`> `}<span className="text-[var(--ink-3)]">/customize</span>{`
+
+`}<span className="text-[var(--ink-1)]">Walking you through making this kit yours.
+Product name?</span>{`  Linear-but-for-X
+`}<span className="text-[var(--ink-1)]">Accent color?</span>{`   amber
+`}<span className="text-[var(--ink-1)]">Domain?</span>{`         lbfx.app
+
+`}<span className="text-[var(--accent)]">✓ </span>{`Brand swap committed (17 files).
+`}<span className="text-[var(--accent)]">✓ </span>{`Stripe price IDs scaffolded in .env.
+`}<span className="text-[var(--accent)]">✓ </span>{`Landing copy + comparison rewritten.
+
+`}<span className="text-[var(--ink-1)]">›</span>{` `}<span className="text-[var(--accent)] animate-pulse">▍</span>
+        </pre>
+      </div>
+      <p className="text-center text-xs text-[var(--ink-1)] mt-3">
+        Five built-in skills cover the most common SaaS scaffolding. See{" "}
+        <Link
+          href="/docs/ai-first"
+          className="text-[var(--ink-2)] hover:text-[var(--accent)] underline-offset-4 hover:underline"
+        >
+          AI-first features
+        </Link>
+        .
+      </p>
+    </div>
+  );
+}
+
 const features = [
   {
     title: "Authentication",
@@ -157,7 +200,7 @@ const techStack = [
   { name: "NextAuth v5", category: "Auth" },
   { name: "Stripe", category: "Payments" },
   { name: "Recharts", category: "Charts" },
-  { name: "Resend", category: "Email" },
+  { name: "smtpfa.st", category: "Email" },
   { name: "Docker", category: "Deploy" },
   { name: "Vitest", category: "Testing" },
 ];
@@ -182,33 +225,34 @@ export default function LandingPage() {
       <MarketingNav />
 
       {/* Hero */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 md:pt-32 md:pb-32 text-center">
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-20 md:pt-28 md:pb-24 text-center">
         <Reveal>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] text-[var(--ink-2)] text-xs font-medium mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-            Open source · MIT licensed
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+            Built for Claude Code · MIT licensed
           </div>
         </Reveal>
 
         <Reveal delay={80}>
           <h1 className="text-[44px] sm:text-6xl md:text-7xl font-semibold tracking-[-0.02em] leading-[1.05] text-[var(--ink-3)] mb-6">
             Ship your SaaS<br className="hidden sm:block" />{" "}
-            <span className="text-[var(--ink-1)]">in days, not months.</span>
+            <span className="text-[var(--ink-1)]">in prompts, not months.</span>
           </h1>
         </Reveal>
 
         <Reveal delay={160}>
           <p className="text-base md:text-lg text-[var(--ink-1)] max-w-2xl mx-auto mb-10 leading-relaxed">
             A production-grade Next.js starter with auth, payments, an admin
-            console, a blog engine, and the boring infrastructure all already
-            done. You bring the product.
+            console, a blog engine, and the boring infrastructure already done.
+            Plus skills, subagents, and an MCP server so your AI agent extends
+            it in a few prompts instead of grepping for hours.
           </p>
         </Reveal>
 
         <Reveal delay={240}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
             <Link
-              href="https://github.com"
+              href="https://github.com/The-DevOps-Daily/surge"
               className="inline-flex items-center justify-center h-12 px-6 rounded-[14px] bg-[var(--ink-3)] text-[var(--surface-0)] font-medium text-base hover:bg-[var(--ink-2)] transition-colors focus-ring min-w-[180px]"
             >
               Get started
@@ -220,6 +264,10 @@ export default function LandingPage() {
               Live demo
             </Link>
           </div>
+        </Reveal>
+
+        <Reveal delay={320}>
+          <HeroTerminal />
         </Reveal>
       </section>
 

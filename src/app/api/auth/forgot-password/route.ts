@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       },
     );
 
-    // sendEmail short-circuits when RESEND_API_KEY is unset; we still want to
+    // sendEmail short-circuits when SMTPFAST_API_KEY is unset; we still want to
     // burn the reset token / set expiry above so the token table doesn't grow.
     await sendEmail({ to: email, subject: "Reset your password", html });
   }

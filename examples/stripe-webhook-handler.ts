@@ -8,12 +8,13 @@
  *   - Always look up the user via `stripeCustomerId` (never `customer_email`
  *     — emails can change).
  *   - If `!user` after lookup, log + break (don't 500 — Stripe will retry).
- *   - Send transactional emails through `emailLayout` from lib/email-layout.ts.
+ *   - Send transactional emails through `sendEmail()` from lib/email.ts.
+ *     That helper short-circuits when SMTPFAST_API_KEY is unset.
  *   - Keep the body short — put logic in named helpers in lib/ if it grows.
  */
 
-import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 import {
   emailLayout,
   emailButton,
@@ -36,10 +37,7 @@ export async function handleTrialWillEnd(invoice: {
     return;
   }
 
-  if (!process.env.RESEND_API_KEY) return;
-  const resend = new Resend(process.env.RESEND_API_KEY);
   const billingUrl = `${process.env.NEXTAUTH_URL || "https://example.com"}/billing`;
-
   const html = emailLayout(
     [
       emailHeading("Your trial ends soon"),
@@ -54,12 +52,9 @@ export async function handleTrialWillEnd(invoice: {
     },
   );
 
-  await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
+  await sendEmail({
     to: user.email,
     subject: "Your trial ends in 3 days",
     html,
-  }).catch((err) =>
-    console.error("[stripe] trial_will_end email failed:", err),
-  );
+  });
 }

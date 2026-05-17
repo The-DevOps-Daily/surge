@@ -1,12 +1,13 @@
 /**
  * Sending a one-off transactional email.
  *
- * Drop into any server-side context (route handler, cron, webhook).
- * Imports the shared light-friendly scaffold so it matches the rest
- * of the kit's emails (welcome, reset, monthly report).
+ * Drop into any server-side context (route handler, cron, webhook). Imports
+ * the shared `sendEmail()` helper from lib/email.ts so it goes through the
+ * same env-check + retry semantics as the rest of the kit. The transport is
+ * smtpfa.st (https://smtpfa.st); swap inside lib/email.ts to change provider.
  */
 
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import {
   emailLayout,
   emailButton,
@@ -25,14 +26,7 @@ export async function sendActionRequiredEmail({
   recipientName,
   actionUrl,
 }: SendArgs) {
-  if (!process.env.RESEND_API_KEY) {
-    console.log("[email] RESEND_API_KEY not set, skipping");
-    return null;
-  }
-
-  const resend = new Resend(process.env.RESEND_API_KEY);
   const name = recipientName || "there";
-
   const html = emailLayout(
     [
       emailHeading(`Action needed, ${name}`),
@@ -50,17 +44,5 @@ export async function sendActionRequiredEmail({
     },
   );
 
-  const { error } = await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
-    to,
-    subject: "Action required",
-    html,
-  });
-
-  if (error) {
-    console.error("[email] sendActionRequiredEmail failed:", error);
-    throw error;
-  }
-
-  return { success: true };
+  return sendEmail({ to, subject: "Action required", html });
 }

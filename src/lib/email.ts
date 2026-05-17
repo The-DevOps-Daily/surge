@@ -1,4 +1,3 @@
-import { Resend } from "resend";
 import { getUnsubscribeUrl } from "@/app/api/unsubscribe/route";
 import {
   emailLayout,
@@ -7,9 +6,9 @@ import {
   emailParagraph,
 } from "@/lib/email-layout";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const SMTPFAST_BASE_URL = (
+  process.env.SMTPFAST_API_URL || "https://smtpfa.st"
+).replace(/\/$/, "");
 
 interface SendEmailArgs {
   to: string | string[];
@@ -21,10 +20,13 @@ interface SendEmailArgs {
 /**
  * Single send entry point. Wraps three things every caller would otherwise
  * have to repeat:
- *   1. Short-circuits when RESEND_API_KEY is unset (local dev / tests).
- *   2. Uses the Resend SDK (not raw fetch — easier to mock + consistent error shape).
+ *   1. Short-circuits when SMTPFAST_API_KEY is unset (local dev / tests).
+ *   2. Posts to smtpfa.st's REST API (no SDK dep — keeps the bundle lean).
  *   3. Catches and logs so an email failure never 500s the request that
  *      triggered it. Transactional email is fire-and-forget for the caller.
+ *
+ * To use a different provider, replace this function. Every send in the kit
+ * goes through it.
  *
  * Returns { sent: boolean } so callers can branch on success when they care
  * (most don't).
@@ -35,20 +37,33 @@ export async function sendEmail({
   html,
   headers,
 }: SendEmailArgs): Promise<{ sent: boolean }> {
-  if (!resend) {
-    console.log("[email] RESEND_API_KEY not set, skipping send");
+  const apiKey = process.env.SMTPFAST_API_KEY;
+  if (!apiKey) {
+    console.log("[email] SMTPFAST_API_KEY not set, skipping send");
     return { sent: false };
   }
   try {
-    const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
-      to,
-      subject,
-      html,
-      ...(headers ? { headers } : {}),
+    const res = await fetch(`${SMTPFAST_BASE_URL}/api/v1/emails`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from:
+          process.env.SMTPFAST_FROM_EMAIL ||
+          "SaaS App <noreply@example.com>",
+        to,
+        subject,
+        html,
+        ...(headers ? { headers } : {}),
+      }),
     });
-    if (error) {
-      console.error("[email] send failed:", error);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(
+        `[email] smtpfa.st send failed: ${res.status} ${res.statusText} ${body.slice(0, 200)}`,
+      );
       return { sent: false };
     }
     return { sent: true };
@@ -71,11 +86,6 @@ export async function sendMonthlyReport(
   email: string,
   data: MonthlyReportData,
 ) {
-  if (!resend) {
-    console.log("RESEND_API_KEY not configured, skipping email send");
-    return null;
-  }
-
   const positive = data.change >= 0;
   const changePrefix = positive ? "+" : "";
   const fmt = (amount: number) =>

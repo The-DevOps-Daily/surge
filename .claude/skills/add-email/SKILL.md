@@ -29,9 +29,10 @@ description: |
 
 ### 3. Use the template
 
-Copy `examples/transactional-email.ts` if it's a reusable helper, or this inline pattern if it lives in a route:
+Always go through `sendEmail()` from `@/lib/email`. It short-circuits when `SMTPFAST_API_KEY` is unset, posts to smtpfa.st, and catches/logs failures so an email send never 500s the request that triggered it.
 
 ```ts
+import { sendEmail } from "@/lib/email";
 import {
   emailLayout,
   emailButton,
@@ -52,21 +53,20 @@ const html = emailLayout(
   },
 );
 
-await resend.emails.send({
-  from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
+await sendEmail({
   to: recipient.email,
   subject: "Subject line",
   html,
 });
 ```
 
-### 4. Always feature-gate on RESEND_API_KEY
+### 4. Don't re-invent the env check
 
-Wrap the send in `if (process.env.RESEND_API_KEY) { ... }`. Without the key, log a warning and skip. Don't crash the request.
+`sendEmail()` already short-circuits when `SMTPFAST_API_KEY` is missing. Don't wrap call sites in an extra `if (process.env.SMTPFAST_API_KEY)` — it's redundant and inconsistent with the rest of the kit.
 
-### 5. Error handling
+### 5. Don't re-invent the error handling
 
-Wrap the `resend.emails.send` call in a `.catch()` that logs. Don't let an email failure 500 the request that triggered it — email is fire-and-forget for most flows.
+`sendEmail()` returns `{ sent: boolean }` and never throws. Branch on `result.sent` only if you actually care about the success path. Most callers don't (transactional email is fire-and-forget).
 
 ### 6. Marketing emails need unsubscribe
 
@@ -85,8 +85,8 @@ Use `getUnsubscribeUrl(userId)` from `src/app/api/unsubscribe/route.ts`. Add a c
 
 - `npx tsc --noEmit` clean.
 - `npm test` green.
-- Tell the user how to test: Resend dashboard has a "send test email" feature; or run the trigger locally with a real Resend key and inbox.
-- Remind them to update `RESEND_FROM_EMAIL` in `.env` to their verified sending domain — sends from `@example.com` will be rejected.
+- Tell the user how to test: trigger the flow locally with a real `SMTPFAST_API_KEY` from https://smtpfa.st/api-keys (scope: `email:send`) and check the inbox.
+- Remind them to update `SMTPFAST_FROM_EMAIL` in `.env` to a domain that's been added + verified at https://smtpfa.st/domains — sends from unverified domains will be rejected.
 
 ## Conventions
 

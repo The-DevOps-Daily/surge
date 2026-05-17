@@ -4,20 +4,25 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await bcrypt.hash("changeme123", 12);
+  // Default seed credentials. The kit is meant to be run locally first, so we
+  // keep them memorable. Change before deploying to anything public.
+  const SEED_EMAIL = "admin@admin.com";
+  const SEED_PASSWORD = "password";
+
+  const hashedPassword = await bcrypt.hash(SEED_PASSWORD, 12);
 
   const user = await prisma.user.upsert({
-    where: { email: "admin@example.com" },
+    where: { email: SEED_EMAIL },
     update: { role: "admin" },
     create: {
-      email: "admin@example.com",
+      email: SEED_EMAIL,
       name: "Admin",
       password: hashedPassword,
       role: "admin",
     },
   });
 
-  console.log("Created user:", user.email);
+  console.log(`Created seed user: ${user.email} (password: ${SEED_PASSWORD})`);
 }
 
 main()

@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     });
 
     // Welcome email. Fire-and-forget — sendEmail() short-circuits when
-    // RESEND_API_KEY is unset and swallows failures so registration succeeds
+    // SMTPFAST_API_KEY is unset and swallows failures so registration succeeds
     // regardless.
     const displayName = name || "there";
     const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`;

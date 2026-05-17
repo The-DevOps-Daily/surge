@@ -11,57 +11,88 @@ export const metadata = seo({
 
 export default function DocsIndexPage() {
   const docs = getAllDocs();
+  const featured = docs.find((d) => d.slug === "quickstart");
+  const rest = docs.filter((d) => d.slug !== "quickstart");
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div>
-        <span className="inline-flex items-center h-7 px-3 rounded-full border border-[var(--line-1)] bg-[var(--surface-1)] text-[11px] uppercase tracking-[0.06em] text-[var(--ink-1)]">
-          Docs
-        </span>
-        <h1 className="mt-4 text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-[var(--ink-3)]">
+    <div className="space-y-10 animate-fade-in max-w-2xl">
+      <header>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-[-0.02em] text-[var(--ink-3)]">
           Documentation
         </h1>
-        <p className="mt-3 text-[var(--ink-1)] text-lg max-w-2xl leading-relaxed">
-          Everything you need to ship with the starter kit. Pick a page from
-          the sidebar or jump in below.
+        <p className="mt-3 text-[var(--ink-1)] text-base md:text-lg leading-relaxed">
+          Everything you need to ship with the starter kit. Use the sidebar to
+          jump around, or start at the top below.
         </p>
-      </div>
+      </header>
 
-      {docs.length === 0 ? (
-        <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-10 text-center">
-          <p className="text-sm text-[var(--ink-1)]">
-            No docs yet. Add markdown files to{" "}
-            <code className="text-[var(--accent)] bg-[var(--accent-soft)] px-1.5 py-0.5 rounded text-xs font-mono">
-              content/docs/
-            </code>
-            .
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {docs.map((doc) => (
-            <Link
-              key={doc.slug}
-              href={`/docs/${doc.slug}`}
-              className="group block focus-ring rounded-[14px]"
-            >
-              <article className="h-full rounded-[14px] border border-[var(--line-1)] bg-[var(--surface-1)] p-5 transition-colors group-hover:border-[var(--line-2)] group-hover:bg-[var(--surface-2)]">
-                <h2 className="text-base font-semibold text-[var(--ink-3)] tracking-[-0.005em] mb-1.5">
-                  {doc.title}
-                </h2>
-                {doc.description && (
-                  <p className="text-sm text-[var(--ink-1)] leading-relaxed">
-                    {doc.description}
-                  </p>
-                )}
-                <div className="mt-4 inline-flex items-center gap-1 text-xs text-[var(--ink-3)] font-medium group-hover:gap-1.5 transition-all">
-                  Read
+      {featured && (
+        <Link
+          href={`/docs/${featured.slug}`}
+          className="group block focus-ring rounded-[18px]"
+        >
+          <article className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-7 transition-colors group-hover:border-[var(--line-2)] group-hover:bg-[var(--surface-2)] shadow-[var(--shadow-1)]">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[11px] uppercase tracking-[0.06em] font-semibold text-[var(--accent)] bg-[var(--accent-soft)] px-2 py-0.5 rounded-full">
+                Start here
+              </span>
+            </div>
+            <h2 className="text-xl font-semibold tracking-[-0.01em] text-[var(--ink-3)] mb-2">
+              {featured.title}
+            </h2>
+            {featured.description && (
+              <p className="text-[var(--ink-1)] leading-relaxed">
+                {featured.description}
+              </p>
+            )}
+            <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-[var(--ink-3)] font-medium group-hover:gap-2 transition-all">
+              Read the quickstart
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </div>
+          </article>
+        </Link>
+      )}
+
+      {rest.length > 0 && (
+        <section>
+          <h2 className="text-[11px] uppercase tracking-[0.06em] font-medium text-[var(--ink-1)] mb-3 px-1">
+            More guides
+          </h2>
+          <ul className="divide-y divide-[var(--line-1)] rounded-[16px] border border-[var(--line-1)] bg-[var(--surface-1)] overflow-hidden">
+            {rest.map((doc) => (
+              <li key={doc.slug}>
+                <Link
+                  href={`/docs/${doc.slug}`}
+                  className="group flex items-start gap-4 px-5 py-4 hover:bg-[var(--surface-2)] transition-colors focus-ring"
+                >
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-[var(--ink-3)] tracking-[-0.005em]">
+                      {doc.title}
+                    </h3>
+                    {doc.description && (
+                      <p className="mt-1 text-sm text-[var(--ink-1)] leading-relaxed">
+                        {doc.description}
+                      </p>
+                    )}
+                  </div>
                   <svg
-                    className="w-3 h-3"
+                    className="w-4 h-4 text-[var(--ink-1)] flex-shrink-0 mt-0.5 group-hover:text-[var(--ink-3)] group-hover:translate-x-0.5 transition-all"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    strokeWidth={2}
+                    strokeWidth={1.6}
                   >
                     <path
                       strokeLinecap="round"
@@ -69,14 +100,14 @@ export default function DocsIndexPage() {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
-      <p className="text-xs text-[var(--ink-1)]">
+      <p className="text-xs text-[var(--ink-1)] pt-2">
         Need the raw markdown? Append{" "}
         <code className="text-[var(--ink-2)] font-mono">.md</code> to any docs
         URL — for example,{" "}

@@ -14,7 +14,7 @@ If a task in this repo matches one of the skills in `.claude/skills/`, use that 
 - **Prisma 6 / SQLite** (Postgres in prod). Schema at `prisma/schema.prisma`. Migrations via `npx prisma migrate dev`.
 - **NextAuth v5** beta. Credentials provider. Session via `import { auth } from "@/lib/auth"`.
 - **Stripe** for billing. Webhook at `/api/stripe/webhook`. Plans in `src/lib/pricing.ts`.
-- **Resend** for transactional email. Shared scaffold in `src/lib/email-layout.ts`.
+- **smtpfa.st** for transactional email (REST, no SDK). All sends go through `sendEmail()` in `src/lib/email.ts`. Shared HTML scaffold in `src/lib/email-layout.ts`.
 - **Vitest** for tests. Run via `npm test` (which is `vitest run`).
 
 ---
