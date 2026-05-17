@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { useTier } from "@/hooks/use-tier";
 
 interface StatProps {
   label: string;
@@ -34,17 +35,9 @@ function Stat({ label, value, delta, icon }: StatProps) {
 
 export default function Dashboard() {
   const { data: session } = useSession();
-  const [tier, setTier] = useState<string>("free");
+  const { tier: tierInfo } = useTier();
+  const tier = tierInfo?.tier ?? "free";
   const [upgradeDismissed, setUpgradeDismissed] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/user/tier")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.tier) setTier(data.tier);
-      })
-      .catch(() => {});
-  }, []);
 
   return (
     <div className="space-y-8 animate-fade-in">

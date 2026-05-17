@@ -83,3 +83,15 @@ export const TIER_LABELS: Record<string, string> = {
 export function getPlan(key: string) {
   return PLANS[key as PlanKey] || PLANS.free;
 }
+
+/**
+ * Single source of truth for "is this user on a paid plan". Centralizing this
+ * means adding a new tier (or splitting one apart) doesn't require grepping
+ * every page that gates features.
+ */
+const PAID_TIERS: ReadonlySet<string> = new Set(["pro", "family"]);
+
+export function isPaidTier(tier: string | null | undefined): boolean {
+  if (!tier) return false;
+  return PAID_TIERS.has(tier);
+}

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
+import gfm from "remark-gfm";
 import html from "remark-html";
 
 const DOCS_DIR = path.join(process.cwd(), "content/docs");
@@ -68,7 +69,10 @@ export async function getDocBySlug(slug: string): Promise<DocPage | null> {
   const { data, content } = matter(fileContents);
   const stat = fs.statSync(filePath);
 
-  const processed = await remark().use(html, { sanitize: true }).process(content);
+  const processed = await remark()
+    .use(gfm)
+    .use(html, { sanitize: true })
+    .process(content);
 
   return {
     slug,

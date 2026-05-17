@@ -11,6 +11,53 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
+interface SendEmailArgs {
+  to: string | string[];
+  subject: string;
+  html: string;
+  headers?: Record<string, string>;
+}
+
+/**
+ * Single send entry point. Wraps three things every caller would otherwise
+ * have to repeat:
+ *   1. Short-circuits when RESEND_API_KEY is unset (local dev / tests).
+ *   2. Uses the Resend SDK (not raw fetch — easier to mock + consistent error shape).
+ *   3. Catches and logs so an email failure never 500s the request that
+ *      triggered it. Transactional email is fire-and-forget for the caller.
+ *
+ * Returns { sent: boolean } so callers can branch on success when they care
+ * (most don't).
+ */
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  headers,
+}: SendEmailArgs): Promise<{ sent: boolean }> {
+  if (!resend) {
+    console.log("[email] RESEND_API_KEY not set, skipping send");
+    return { sent: false };
+  }
+  try {
+    const { error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "SaaS App <noreply@example.com>",
+      to,
+      subject,
+      html,
+      ...(headers ? { headers } : {}),
+    });
+    if (error) {
+      console.error("[email] send failed:", error);
+      return { sent: false };
+    }
+    return { sent: true };
+  } catch (err) {
+    console.error("[email] send threw:", err);
+    return { sent: false };
+  }
+}
+
 interface MonthlyReportData {
   userId: string;
   netWorth: number;
@@ -77,8 +124,7 @@ export async function sendMonthlyReport(
     `<div style="margin-top:8px;">${emailButton(dashboardUrl, "Open dashboard")}</div>`,
   ].join("");
 
-  const { error } = await resend.emails.send({
-    from: "SaaS App <noreply@example.com>",
+  const result = await sendEmail({
     to: email,
     subject: `Monthly summary · ${formattedNetWorth}`,
     headers: {
@@ -88,15 +134,11 @@ export async function sendMonthlyReport(
     html: emailLayout(body, {
       preheader: `Net worth: ${formattedNetWorth} (${changePrefix}${formattedChange})`,
       appName: "SaaS App",
-      footer: "You're receiving this because monthly reports are on in settings.",
+      footer:
+        "You're receiving this because monthly reports are on in settings.",
       unsubscribeUrl,
     }),
   });
 
-  if (error) {
-    console.error("Failed to send monthly report email:", error);
-    throw error;
-  }
-
-  return { success: true };
+  return result.sent ? { success: true } : null;
 }

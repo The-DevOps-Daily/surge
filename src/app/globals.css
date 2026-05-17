@@ -341,6 +341,57 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--line-1);
 }
 
+/* GFM tables (remark-gfm). Render as a bordered, zebra-striped block that
+ * matches the rest of the content card system. */
+.blog-content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 24px 0;
+  border: 1px solid var(--line-1);
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 0.92em;
+}
+.blog-content thead { background: var(--surface-2); }
+.blog-content th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink-3);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-1);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.blog-content td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-1);
+  color: var(--ink-2);
+  vertical-align: top;
+}
+.blog-content tbody tr:last-child td { border-bottom: 0; }
+.blog-content tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--surface-2) 40%, transparent);
+}
+.blog-content td code,
+.blog-content th code {
+  background: var(--surface-2);
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 0.88em;
+}
+
+/* GFM task list checkboxes. */
+.blog-content input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: var(--accent);
+}
+.blog-content .contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
 /* Blog callouts (markdown plugin output). */
 .callout {
   border-radius: 14px;

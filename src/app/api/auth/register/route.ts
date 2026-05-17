@@ -8,6 +8,7 @@ import {
   emailHeading,
   emailParagraph,
 } from "@/lib/email-layout";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -71,46 +72,30 @@ export async function POST(req: Request) {
       data: { email, password: hashedPassword, name },
     });
 
-    // Send welcome email if Resend is configured
-    if (process.env.RESEND_API_KEY) {
-      try {
-        const displayName = name || "there";
-        const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`;
-        const html = emailLayout(
-          [
-            emailHeading(`Welcome, ${displayName}.`),
-            emailParagraph(
-              "Thanks for joining SaaS App. You can start using your account right away.",
-            ),
-            emailParagraph(
-              "If you ever get stuck, just reply to this email.",
-            ),
-            `<div style="margin-top:24px;">${emailButton(dashboardUrl, "Go to dashboard")}</div>`,
-          ].join(""),
-          {
-            preheader: "Welcome to SaaS App — your account is ready.",
-            appName: "SaaS App",
-          },
-        );
-
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: process.env.RESEND_FROM_EMAIL || "SaaS App <hello@your-app.com>",
-            to: [email],
-            subject: "Welcome to SaaS App",
-            html,
-          }),
-        });
-      } catch (emailErr) {
-        // Log but do not block registration if email sending fails
-        console.warn("[register] failed to send welcome email:", emailErr);
-      }
-    }
+    // Welcome email. Fire-and-forget — sendEmail() short-circuits when
+    // RESEND_API_KEY is unset and swallows failures so registration succeeds
+    // regardless.
+    const displayName = name || "there";
+    const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/login`;
+    const welcomeHtml = emailLayout(
+      [
+        emailHeading(`Welcome, ${displayName}.`),
+        emailParagraph(
+          "Thanks for joining SaaS App. You can start using your account right away.",
+        ),
+        emailParagraph("If you ever get stuck, just reply to this email."),
+        `<div style="margin-top:24px;">${emailButton(dashboardUrl, "Go to dashboard")}</div>`,
+      ].join(""),
+      {
+        preheader: "Welcome to SaaS App — your account is ready.",
+        appName: "SaaS App",
+      },
+    );
+    void sendEmail({
+      to: email,
+      subject: "Welcome to SaaS App",
+      html: welcomeHtml,
+    });
 
     return NextResponse.json(
       { id: user.id, email: user.email, name: user.name },

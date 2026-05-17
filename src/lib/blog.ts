@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
+import gfm from "remark-gfm";
 import html from "remark-html";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
@@ -70,6 +71,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const { data, content } = matter(fileContents);
 
   const processed = await remark()
+    .use(gfm)
     .use(html, { sanitize: true })
     .process(content);
   const contentHtml = processed.toString();
