@@ -1,0 +1,35 @@
+# Cursor rules for Surge
+
+Hi Cursor. The full conventions doc is `CLAUDE.md` at the repo root — read it. The cross-tool summary is `AGENTS.md`. The short version is below.
+
+## Hard rules
+
+1. No hardcoded colors. Use CSS variables from `src/app/globals.css`: `var(--surface-N)`, `var(--line-N)`, `var(--ink-N)`, `var(--accent)`, `var(--warn)`, `var(--danger)`. Apply via Tailwind arbitrary values: `bg-[var(--surface-1)] text-[var(--ink-3)]`.
+2. No raw `<input>`, `<select>`, `<textarea>` in pages. Use `Input`, `Select`, `Textarea` from `@/components/ui/input`.
+3. No `window.confirm()` or `window.alert()`. Use `<ConfirmDialog>` and `useToast()`.
+4. No `<Modal>` reimplementations. Use `@/components/ui/modal`.
+5. All transactional emails use `emailLayout()` from `@/lib/email-layout`.
+6. Every authed API route starts with `const session = await auth(); if (!session?.user?.id) return 401`.
+7. Every auth-adjacent route is rate-limited via `@/lib/rate-limit`.
+8. Don't run `npm run dev` or `npm run build` locally on a low-RAM host. Use `npx tsc --noEmit` and `npm test`.
+
+## When scaffolding
+
+- New page → start from `examples/tier-gated-page.tsx` or `examples/admin-table-page.tsx`.
+- New API route → start from `examples/authed-api-route.ts` or `examples/admin-api-route.ts`.
+- New email → start from `examples/transactional-email.ts`.
+- New Stripe webhook event → start from `examples/stripe-webhook-handler.ts`.
+
+## Style
+
+- Server components by default; `"use client"` only when needed (state, effects, handlers).
+- Inline SVG icons only in chrome (sidebar, nav, buttons). Emoji is fine in marketing copy.
+- Headings: `text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]` for app/admin h1.
+- Functional components only. No `any`.
+
+## See also
+
+- `CLAUDE.md` — full version of everything above plus primitive registry, helper registry, code style guide.
+- `AGENTS.md` — same content in cross-tool format.
+- `.claude/skills/` — invokable scaffolding skills (used by Claude Code; if you're using Cursor's Composer, open the SKILL.md and follow manually).
+- `docs/prompts/` — paste-ready prompts for common extensions.
