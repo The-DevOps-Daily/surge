@@ -1,10 +1,4 @@
 <svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#10b981"/>
-      <stop offset="100%" style="stop-color:#14b8a6"/>
-    </linearGradient>
-  </defs>
-  <rect width="192" height="192" rx="38" fill="url(#bg)"/>
-  <text x="50%" y="55%" dominant-baseline="central" text-anchor="middle" fill="white" font-family="system-ui, -apple-system, sans-serif" font-weight="bold" font-size="67">NW</text>
+  <rect width="192" height="192" rx="38" fill="#18181b"/>
+  <path d="M96 50 50 142h92L96 50z" fill="#fafafa"/>
 </svg>
