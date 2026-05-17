@@ -4,6 +4,8 @@ import React from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 
+type Tone = "danger" | "primary";
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,6 +14,8 @@ interface ConfirmDialogProps {
   description?: string;
   confirmText?: string;
   cancelText?: string;
+  tone?: Tone;
+  loading?: boolean;
 }
 
 export function ConfirmDialog({
@@ -20,24 +24,39 @@ export function ConfirmDialog({
   onConfirm,
   title = "Are you sure?",
   description = "This action cannot be undone.",
-  confirmText = "Delete",
+  confirmText = "Confirm",
   cancelText = "Cancel",
+  tone = "danger",
+  loading = false,
 }: ConfirmDialogProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="space-y-4">
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
-          <p className="text-sm text-gray-300">{description}</p>
-        </div>
-        <div className="flex gap-3 justify-end">
-          <Button variant="secondary" onClick={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      description={description}
+      size="sm"
+      dismissOnOverlay={!loading}
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose} disabled={loading}>
             {cancelText}
           </Button>
-          <Button variant="danger" onClick={onConfirm}>
+          <Button
+            variant={tone === "danger" ? "danger" : "accent"}
+            onClick={onConfirm}
+            loading={loading}
+          >
             {confirmText}
           </Button>
-        </div>
-      </div>
+        </>
+      }
+    >
+      {/* Body intentionally minimal — the description in the header carries
+       * the explanation; rendering a duplicate copy block reads as noise.
+       * Callers needing extra detail can compose richer dialogs against the
+       * underlying Modal directly. */}
+      <span className="sr-only">{description}</span>
     </Modal>
   );
 }

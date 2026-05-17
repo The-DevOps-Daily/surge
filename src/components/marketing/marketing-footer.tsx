@@ -1,51 +1,71 @@
 import Link from 'next/link';
 
+const sections: { title: string; links: { href: string; label: string }[] }[] = [
+  {
+    title: "Product",
+    links: [
+      { href: "/pricing", label: "Pricing" },
+      { href: "/compare", label: "Compare" },
+      { href: "/blog", label: "Blog" },
+    ],
+  },
+  {
+    title: "Free tools",
+    links: [{ href: "/tools/sample-tool", label: "Growth calculator" }],
+  },
+  {
+    title: "Account",
+    links: [
+      { href: "/login", label: "Log in" },
+      { href: "/register", label: "Create account" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "/terms", label: "Terms" },
+      { href: "/privacy", label: "Privacy" },
+    ],
+  },
+];
+
 export function MarketingFooter() {
   return (
-    <footer className="relative z-10 border-t border-white/[0.06] mt-12 bg-[#0a0a0f]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-8">
-          {/* Product */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-200 mb-4">Product</h4>
-            <ul className="space-y-2">
-              <li><Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Pricing</Link></li>
-              <li><Link href="/compare" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Compare</Link></li>
-              <li><Link href="/blog" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Blog</Link></li>
-            </ul>
-          </div>
-          {/* Free Tools */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-200 mb-4">Free Tools</h4>
-            <ul className="space-y-2">
-              <li><Link href="/tools/sample-tool" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Growth Calculator</Link></li>
-            </ul>
-          </div>
-          {/* Account */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-200 mb-4">Account</h4>
-            <ul className="space-y-2">
-              <li><Link href="/login" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Login</Link></li>
-              <li><Link href="/register" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Register</Link></li>
-            </ul>
-          </div>
-          {/* Legal */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-200 mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li><Link href="/terms" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Terms of Service</Link></li>
-              <li><Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Privacy Policy</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="border-t border-white/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">S</span>
+    <footer className="relative z-10 border-t border-[var(--line-1)] mt-16 bg-[var(--surface-0)]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+          {sections.map((section) => (
+            <div key={section.title}>
+              <h4 className="text-xs font-medium uppercase tracking-[0.06em] text-[var(--ink-1)] mb-4">
+                {section.title}
+              </h4>
+              <ul className="space-y-2.5">
+                {section.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-[var(--ink-2)] hover:text-[var(--ink-3)] transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <span className="text-sm text-gray-500">SaaS App</span>
+          ))}
+        </div>
+        <div className="border-t border-[var(--line-1)] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-[7px] bg-[var(--ink-3)] text-[var(--surface-0)] flex items-center justify-center">
+              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2 2 22h20L12 2z" />
+              </svg>
+            </div>
+            <span className="text-sm text-[var(--ink-2)]">SaaS App</span>
           </div>
-          <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} SaaS App. All rights reserved.</p>
+          <p className="text-xs text-[var(--ink-1)]">
+            &copy; {new Date().getFullYear()} SaaS App. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

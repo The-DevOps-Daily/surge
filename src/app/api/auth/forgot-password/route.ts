@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const limiter = rateLimit(`forgot-password:${ip}`, {
+    maxAttempts: 5,
+    windowMs: 60 * 60_000,
+  });
+  if (!limiter.success) {
+    return NextResponse.json({ success: true });
+  }
+
   const { email } = await req.json();
 
   // Always return success to avoid revealing whether an account exists

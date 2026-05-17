@@ -46,66 +46,94 @@ export function SearchableSelect({
   return (
     <div className="space-y-1.5" ref={ref}>
       {label && (
-        <label className="block text-sm font-medium text-gray-400">{label}</label>
+        <label className="block text-xs font-medium uppercase tracking-[0.04em] text-[var(--ink-1)]">
+          {label}
+        </label>
       )}
       <div className="relative">
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-2.5 text-left text-gray-100 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all duration-200 min-h-[44px] flex items-center justify-between"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          className="w-full h-11 rounded-[12px] border border-[var(--line-2)] bg-[var(--surface-1)] px-3.5 text-left text-[var(--ink-3)] focus-ring transition-colors duration-150 ease-out hover:border-[var(--line-3)] flex items-center justify-between"
         >
-          <span className="flex items-center gap-2">
-            {selected?.icon && <span>{selected.icon}</span>}
-            <span>{selected?.label || placeholder}</span>
+          <span className="flex items-center gap-2 text-sm truncate">
+            {selected?.icon && <span aria-hidden>{selected.icon}</span>}
+            <span className={selected ? "" : "text-[var(--ink-1)]"}>
+              {selected?.label || placeholder}
+            </span>
           </span>
           <svg
-            className={`w-4 h-4 text-gray-500 transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden
+            className={`w-4 h-4 text-[var(--ink-1)] transition-transform duration-150 ${open ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
           </svg>
         </button>
 
         {open && (
-          <div className="absolute z-50 mt-1 w-full bg-[#141420] border border-white/[0.08] rounded-xl shadow-xl overflow-hidden">
+          <div
+            role="listbox"
+            className="absolute z-50 mt-2 w-full rounded-[14px] border border-[var(--line-2)] bg-[var(--surface-2)] shadow-[var(--shadow-3)] overflow-hidden animate-scale-in"
+          >
             {options.length > 5 && (
-              <div className="p-2 border-b border-white/[0.06]">
+              <div className="p-2 border-b border-[var(--line-1)]">
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search..."
                   autoFocus
-                  className="w-full rounded-lg border border-white/[0.08] bg-white/[0.05] px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full rounded-[10px] border border-[var(--line-1)] bg-[var(--surface-1)] px-3 h-9 text-sm text-[var(--ink-3)] placeholder-[var(--ink-1)] focus:outline-none focus:border-[var(--accent)]"
                 />
               </div>
             )}
-            <div className="max-h-48 overflow-y-auto">
+            <div className="max-h-56 overflow-y-auto py-1">
               {filtered.length === 0 ? (
-                <p className="px-4 py-3 text-sm text-gray-500">No results</p>
+                <p className="px-4 py-3 text-sm text-[var(--ink-1)]">No results</p>
               ) : (
-                filtered.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      onChange(opt.value);
-                      setOpen(false);
-                      setSearch("");
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition-colors ${
-                      opt.value === value
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : "text-gray-300 hover:bg-white/[0.06]"
-                    }`}
-                  >
-                    {opt.icon && <span>{opt.icon}</span>}
-                    {opt.label}
-                  </button>
-                ))
+                filtered.map((opt) => {
+                  const isSelected = opt.value === value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        onChange(opt.value);
+                        setOpen(false);
+                        setSearch("");
+                      }}
+                      className={[
+                        "w-full text-left px-3.5 h-9 text-sm flex items-center gap-2 transition-colors duration-100",
+                        isSelected
+                          ? "bg-[var(--accent-soft)] text-[var(--ink-3)]"
+                          : "text-[var(--ink-2)] hover:bg-[var(--surface-3)]",
+                      ].join(" ")}
+                    >
+                      {opt.icon && <span aria-hidden>{opt.icon}</span>}
+                      <span className="truncate">{opt.label}</span>
+                      {isSelected && (
+                        <svg
+                          aria-hidden
+                          className="ml-auto w-4 h-4 text-[var(--accent)]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>

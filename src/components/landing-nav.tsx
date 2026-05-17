@@ -10,14 +10,14 @@ export function LandingNav() {
 
   return (
     <>
-      {/* Desktop nav items */}
-      <div className="hidden sm:flex items-center gap-4">
+      {/* Desktop CTA cluster */}
+      <div className="hidden sm:flex items-center gap-2">
         {status === 'loading' ? (
-          <div className="w-20 h-9" />
+          <div className="h-9 w-20" />
         ) : session ? (
           <Link
             href="/dashboard"
-            className="text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2 rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-200"
+            className="inline-flex h-9 items-center rounded-[10px] px-4 text-sm font-medium bg-[var(--ink-3)] text-[var(--surface-0)] hover:bg-[var(--ink-2)] transition-colors focus-ring"
           >
             Dashboard
           </Link>
@@ -25,15 +25,15 @@ export function LandingNav() {
           <>
             <Link
               href="/login"
-              className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+              className="inline-flex h-9 items-center rounded-[10px] px-3 text-sm text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] transition-colors"
             >
-              Login
+              Log in
             </Link>
             <Link
               href="/register"
-              className="text-sm bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2 rounded-xl font-medium shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-200"
+              className="inline-flex h-9 items-center rounded-[10px] px-4 text-sm font-medium bg-[var(--ink-3)] text-[var(--surface-0)] hover:bg-[var(--ink-2)] transition-colors focus-ring"
             >
-              Start Free
+              Start free
             </Link>
           </>
         )}
@@ -41,60 +41,66 @@ export function LandingNav() {
 
       {/* Mobile hamburger */}
       <button
-        className="sm:hidden p-2 text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+        type="button"
+        className="sm:hidden inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--surface-2)] hover:text-[var(--ink-3)] transition-colors focus-ring"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label="Toggle menu"
+        aria-expanded={mobileOpen}
       >
         {mobileOpen ? (
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18 18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         )}
       </button>
 
-      {/* Mobile menu */}
+      {/* Mobile sheet */}
       {mobileOpen && (
-        <div className="absolute top-full left-0 right-0 bg-[#0d0d14] border-b border-white/[0.06] sm:hidden z-50 shadow-2xl shadow-black/50">
-          <div className="max-w-6xl mx-auto px-6 py-4 space-y-1">
+        <div
+          className="absolute top-full left-0 right-0 bg-[var(--surface-1)] border-b border-[var(--line-1)] sm:hidden z-50 shadow-[var(--shadow-2)] animate-slide-up"
+        >
+          <div className="max-w-6xl mx-auto px-4 py-4 space-y-1">
             <Link
               href="/pricing"
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors min-h-[44px] flex items-center"
+              className="flex items-center h-11 px-4 text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] rounded-[12px] transition-colors"
             >
               Pricing
             </Link>
             <Link
               href="/blog"
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors min-h-[44px] flex items-center"
+              className="flex items-center h-11 px-4 text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] rounded-[12px] transition-colors"
             >
               Blog
             </Link>
             <Link
               href="/compare"
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors min-h-[44px] flex items-center"
+              className="flex items-center h-11 px-4 text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] rounded-[12px] transition-colors"
             >
               Compare
             </Link>
-            <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Free Tools</div>
+            <div className="px-4 pt-3 pb-1 text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--ink-1)]">
+              Free tools
+            </div>
             <Link
               href="/tools/sample-tool"
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-colors min-h-[44px] flex items-center"
+              className="flex items-center h-11 px-4 text-sm font-medium text-[var(--ink-2)] hover:text-[var(--ink-3)] hover:bg-[var(--surface-2)] rounded-[12px] transition-colors"
             >
-              Growth Calculator
+              Growth calculator
             </Link>
 
-            <div className="pt-3 border-t border-white/[0.06] mt-3 space-y-2">
+            <div className="pt-3 border-t border-[var(--line-1)] mt-3 space-y-2">
               {status !== 'loading' && session ? (
                 <Link
                   href="/dashboard"
-                  className="block w-full text-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium text-sm shadow-lg shadow-emerald-500/25 min-h-[44px]"
+                  className="flex items-center justify-center h-11 px-4 bg-[var(--ink-3)] text-[var(--surface-0)] rounded-[12px] font-medium text-sm"
                 >
                   Dashboard
                 </Link>
@@ -102,15 +108,15 @@ export function LandingNav() {
                 <>
                   <Link
                     href="/login"
-                    className="block w-full text-center px-4 py-3 bg-white/[0.06] text-gray-200 rounded-xl font-medium text-sm min-h-[44px]"
+                    className="flex items-center justify-center h-11 px-4 bg-[var(--surface-2)] text-[var(--ink-3)] rounded-[12px] font-medium text-sm"
                   >
-                    Login
+                    Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="block w-full text-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium text-sm shadow-lg shadow-emerald-500/25 min-h-[44px]"
+                    className="flex items-center justify-center h-11 px-4 bg-[var(--ink-3)] text-[var(--surface-0)] rounded-[12px] font-medium text-sm"
                   >
-                    Start Free
+                    Start free
                   </Link>
                 </>
               )}

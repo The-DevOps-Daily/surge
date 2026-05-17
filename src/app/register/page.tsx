@@ -42,28 +42,33 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-4 relative overflow-hidden">
-      {/* Floating gradient orbs */}
-      <div className="w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl absolute -top-20 -right-20" />
-      <div className="w-80 h-80 bg-teal-500/[0.08] rounded-full blur-3xl absolute -bottom-10 -left-10" />
-      <div className="w-64 h-64 bg-purple-500/5 rounded-full blur-3xl absolute top-1/2 left-1/3" />
+    <div className="min-h-screen flex items-center justify-center bg-[var(--surface-0)] p-4 relative overflow-hidden">
+      <div className="bg-mesh" />
 
-      <div className="w-full max-w-md bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-8 relative z-10 animate-scale-in shadow-2xl shadow-black/20">
+      <div className="w-full max-w-[420px] rounded-[24px] border border-[var(--line-1)] bg-[var(--surface-1)] p-8 relative z-10 animate-scale-in shadow-[var(--shadow-3)]">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <span className="text-3xl">💎</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-100">
-            Create Account
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] bg-[var(--ink-3)] text-[var(--surface-0)] mb-5"
+          >
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2 2 22h20L12 2z" />
+            </svg>
+          </Link>
+          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
+            Create your account
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Create your free account
+          <p className="text-sm text-[var(--ink-1)] mt-1.5">
+            Free to start, no card required.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 text-rose-400 text-sm border border-rose-500/20">
+            <div
+              role="alert"
+              className="rounded-[10px] border border-[var(--line-2)] bg-[var(--danger-soft)] text-[var(--danger)] text-sm px-3 py-2.5"
+            >
               {error}
             </div>
           )}
@@ -73,6 +78,7 @@ export default function RegisterPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
+            autoComplete="name"
           />
 
           <Input
@@ -81,6 +87,7 @@ export default function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
+            autoComplete="email"
             required
           />
 
@@ -89,20 +96,31 @@ export default function RegisterPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Min 8 characters"
+            placeholder="At least 8 characters"
+            autoComplete="new-password"
             minLength={8}
+            hint="Use 8 or more characters with a mix of letters, numbers, and symbols."
             required
           />
 
-          <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            size="lg"
+            loading={loading}
+          >
+            {loading ? "Creating account..." : "Create account"}
           </Button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-[var(--ink-1)] mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">
-            Sign In
+          <Link
+            href="/login"
+            className="text-[var(--ink-3)] hover:text-[var(--accent)] font-medium transition-colors"
+          >
+            Sign in
           </Link>
         </p>
       </div>

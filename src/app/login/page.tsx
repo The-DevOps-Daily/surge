@@ -36,28 +36,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-4 relative overflow-hidden">
-      {/* Floating gradient orbs */}
-      <div className="w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl absolute -top-20 -right-20" />
-      <div className="w-80 h-80 bg-teal-500/[0.08] rounded-full blur-3xl absolute -bottom-10 -left-10" />
-      <div className="w-64 h-64 bg-purple-500/5 rounded-full blur-3xl absolute top-1/2 left-1/3" />
+    <div className="min-h-screen flex items-center justify-center bg-[var(--surface-0)] p-4 relative overflow-hidden">
+      <div className="bg-mesh" />
 
-      <div className="w-full max-w-md bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-8 relative z-10 animate-scale-in shadow-2xl shadow-black/20">
+      <div className="w-full max-w-[420px] rounded-[24px] border border-[var(--line-1)] bg-[var(--surface-1)] p-8 relative z-10 animate-scale-in shadow-[var(--shadow-3)]">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <span className="text-3xl">🚀</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-100">
+          {/* Solid mark replaces the previous rocket emoji + glow surface. */}
+          <Link href="/" className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] bg-[var(--ink-3)] text-[var(--surface-0)] mb-5">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2 2 22h20L12 2z" />
+            </svg>
+          </Link>
+          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
             Welcome back
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-[var(--ink-1)] mt-1.5">
             Sign in to your account
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 text-rose-400 text-sm border border-rose-500/20">
+            <div
+              role="alert"
+              className="rounded-[10px] border border-[var(--line-2)] bg-[var(--danger-soft)] text-[var(--danger)] text-sm px-3 py-2.5"
+            >
               {error}
             </div>
           )}
@@ -68,6 +71,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
+            autoComplete="email"
             required
           />
 
@@ -77,26 +81,44 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Your password"
+            autoComplete="current-password"
             required
           />
 
-          <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-full"
+            size="lg"
+            loading={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
 
           <div className="text-right">
-            <Link href="/forgot-password" className="text-sm text-gray-500 hover:text-emerald-400 transition-colors">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-[var(--ink-1)] hover:text-[var(--ink-3)] transition-colors"
+            >
               Forgot password?
             </Link>
           </div>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-emerald-400 hover:text-emerald-300 font-medium">
-            Register
-          </Link>
-        </p>
+        <div className="my-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-[var(--line-1)]" />
+          <span className="text-[11px] uppercase tracking-[0.06em] text-[var(--ink-1)]">
+            New here?
+          </span>
+          <div className="flex-1 h-px bg-[var(--line-1)]" />
+        </div>
+
+        <Link
+          href="/register"
+          className="block w-full text-center h-11 rounded-[12px] border border-[var(--line-2)] bg-[var(--surface-2)] hover:bg-[var(--surface-3)] text-sm font-medium text-[var(--ink-3)] leading-[44px] transition-colors focus-ring"
+        >
+          Create an account
+        </Link>
       </div>
     </div>
   );

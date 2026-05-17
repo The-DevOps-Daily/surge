@@ -5,11 +5,27 @@ import Link from "next/link";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 
-function FadeInSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+// IntersectionObserver-driven fade so sections enter as the user scrolls
+// past them. Honours prefers-reduced-motion by snapping the element into
+// place rather than animating.
+function Reveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setVisible(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
@@ -17,9 +33,8 @@ function FadeInSection({ children, className = "", delay = 0 }: { children: Reac
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.12 },
     );
-
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [delay]);
@@ -27,7 +42,11 @@ function FadeInSection({ children, className = "", delay = 0 }: { children: Reac
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}
+      className={[
+        "transition-all duration-[600ms] ease-out",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
+        className,
+      ].join(" ")}
     >
       {children}
     </div>
@@ -36,48 +55,102 @@ function FadeInSection({ children, className = "", delay = 0 }: { children: Reac
 
 const features = [
   {
-    icon: "\u{1F510}",
     title: "Authentication",
-    description: "Login, register, forgot password, rate limiting, and account deletion. Toggle registration on or off with a single env var.",
+    description:
+      "Login, register, forgot password, rate limiting, account deletion. Toggle registration on or off with one env var.",
   },
   {
-    icon: "\u{1F4B3}",
-    title: "Stripe Payments",
-    description: "Checkout sessions, customer portal, webhook handling, tier-based feature gating, and upgrade prompts. All wired up and ready.",
+    title: "Stripe payments",
+    description:
+      "Checkout sessions, customer portal, webhook handling, tier-based feature gating, upgrade prompts. All wired up.",
   },
   {
-    icon: "\u{1F451}",
-    title: "Admin Dashboard",
-    description: "User management, signup analytics, MRR tracking, system health monitoring, and environment audit. Role-gated and secure.",
+    title: "Admin dashboard",
+    description:
+      "User management, signup analytics, MRR tracking, system health, env audit. Role-gated and secure.",
   },
   {
-    icon: "\u{1F4DD}",
-    title: "Blog Engine",
-    description: "Markdown-powered blog with reading progress, table of contents, share buttons, and OG image generation. Just add posts.",
+    title: "Blog engine",
+    description:
+      "Markdown-powered with reading progress, table of contents, share buttons, dynamic OG images. Just add posts.",
   },
   {
-    icon: "\u{1F3A8}",
     title: "Premium UI",
-    description: "Dark glassmorphism design, mobile-first responsive layout, PWA support, and theme toggle. Beautiful out of the box.",
+    description:
+      "Tokenised dark theme, mobile-first responsive layout, PWA support, accessible primitives. Looks good on day one.",
   },
   {
-    icon: "\u{1F680}",
-    title: "Deploy Ready",
-    description: "Docker, CI/CD with GitHub Actions, PostgreSQL, Nginx with SSL, and 135+ tests. Push to main and go live.",
+    title: "Deploy ready",
+    description:
+      "Docker, GitHub Actions CI/CD, PostgreSQL, Nginx with SSL, 135+ tests. Push to main and go live.",
   },
 ];
 
 const includedItems = [
-  { category: "Auth", items: ["Email/password login", "Registration toggle", "Forgot password flow", "Rate limiting", "Account deletion"] },
-  { category: "Payments", items: ["Stripe checkout", "Customer portal", "Webhook handlers", "Tier limits", "Upgrade prompts"] },
-  { category: "Admin", items: ["User management", "Stats dashboard", "System health", "Content inventory", "Role management"] },
-  { category: "Marketing", items: ["Landing page", "Blog engine", "Free tools template", "Comparison page", "SEO (sitemap, robots, OG)"] },
-  { category: "UI", items: ["Dark/light theme", "Mobile bottom nav", "Desktop sidebar", "Toast notifications", "Confirm dialogs"] },
-  { category: "Infra", items: ["Docker Compose", "GitHub Actions CI/CD", "PostgreSQL + SQLite", "Server setup script", "135+ Vitest tests"] },
+  {
+    category: "Auth",
+    items: [
+      "Email + password login",
+      "Registration toggle",
+      "Forgot password flow",
+      "Rate limiting",
+      "Account deletion",
+    ],
+  },
+  {
+    category: "Payments",
+    items: [
+      "Stripe checkout",
+      "Customer portal",
+      "Webhook handlers",
+      "Tier limits",
+      "Upgrade prompts",
+    ],
+  },
+  {
+    category: "Admin",
+    items: [
+      "User management",
+      "Stats dashboard",
+      "System health",
+      "Content inventory",
+      "Role management",
+    ],
+  },
+  {
+    category: "Marketing",
+    items: [
+      "Landing page",
+      "Blog engine",
+      "Free tools template",
+      "Comparison page",
+      "SEO (sitemap, robots, OG)",
+    ],
+  },
+  {
+    category: "UI",
+    items: [
+      "Dark + light themes",
+      "Mobile bottom nav",
+      "Desktop sidebar",
+      "Toasts",
+      "Confirm dialogs",
+    ],
+  },
+  {
+    category: "Infra",
+    items: [
+      "Docker Compose",
+      "GitHub Actions CI/CD",
+      "PostgreSQL + SQLite",
+      "Server setup script",
+      "135+ Vitest tests",
+    ],
+  },
 ];
 
 const techStack = [
-  { name: "Next.js 14+", category: "Framework" },
+  { name: "Next.js 16", category: "Framework" },
   { name: "TypeScript", category: "Language" },
   { name: "Tailwind CSS", category: "Styling" },
   { name: "Prisma", category: "ORM" },
@@ -90,126 +163,135 @@ const techStack = [
 ];
 
 const steps = [
-  { step: "1", title: "Clone", command: "git clone <repo-url> my-app" },
-  { step: "2", title: "Install", command: "bun install" },
-  { step: "3", title: "Configure", command: "cp .env.example .env" },
-  { step: "4", title: "Launch", command: "bun run dev" },
+  { step: "01", title: "Clone", command: "git clone <repo-url> my-app" },
+  { step: "02", title: "Install", command: "bun install" },
+  { step: "03", title: "Configure", command: "cp .env.example .env" },
+  { step: "04", title: "Launch", command: "bun run dev" },
 ];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-gray-100 overflow-x-hidden">
-      {/* Background effects */}
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--ink-2)] overflow-x-hidden">
+      {/* Background: one soft accent puddle, one neutral. No more gradient
+       * pile-up. */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/[0.04] rounded-full blur-[128px]" />
-        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-teal-500/[0.03] rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 left-1/2 w-[400px] h-[400px] bg-violet-500/[0.02] rounded-full blur-[128px]" />
-        <svg className="absolute inset-0 w-full h-full opacity-[0.015]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        <div className="absolute -top-32 left-1/4 w-[640px] h-[640px] rounded-full blur-[140px] bg-[var(--accent-soft)]" />
+        <div className="absolute top-1/2 -right-32 w-[520px] h-[520px] rounded-full blur-[140px] opacity-50 bg-[var(--surface-2)]" />
       </div>
 
       <MarketingNav />
 
       {/* Hero */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-24 md:pt-28 md:pb-36 text-center">
-        <FadeInSection>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-8">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Open source and MIT licensed
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-24 md:pt-32 md:pb-32 text-center">
+        <Reveal>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] text-[var(--ink-2)] text-xs font-medium mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+            Open source · MIT licensed
           </div>
-        </FadeInSection>
+        </Reveal>
 
-        <FadeInSection delay={100}>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
-              Ship Your SaaS
-            </span>
-            <br />
-            <span className="text-gray-100">in Days, Not Months</span>
+        <Reveal delay={80}>
+          <h1 className="text-[44px] sm:text-6xl md:text-7xl font-semibold tracking-[-0.02em] leading-[1.05] text-[var(--ink-3)] mb-6">
+            Ship your SaaS<br className="hidden sm:block" />{" "}
+            <span className="text-[var(--ink-1)]">in days, not months.</span>
           </h1>
-        </FadeInSection>
+        </Reveal>
 
-        <FadeInSection delay={200}>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Production-ready starter kit with auth, payments, admin, blog, and more.
-            Built with Next.js, Stripe, and love.
+        <Reveal delay={160}>
+          <p className="text-base md:text-lg text-[var(--ink-1)] max-w-2xl mx-auto mb-10 leading-relaxed">
+            A production-grade Next.js starter with auth, payments, an admin
+            console, a blog engine, and the boring infrastructure all already
+            done. You bring the product.
           </p>
-        </FadeInSection>
+        </Reveal>
 
-        <FadeInSection delay={300}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Reveal delay={240}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="https://github.com"
-              className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold text-base shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transition-all duration-200 min-w-[180px]"
+              className="inline-flex items-center justify-center h-12 px-6 rounded-[14px] bg-[var(--ink-3)] text-[var(--surface-0)] font-medium text-base hover:bg-[var(--ink-2)] transition-colors focus-ring min-w-[180px]"
             >
-              Get Started
+              Get started
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-3.5 bg-white/[0.06] text-gray-300 border border-white/[0.08] rounded-xl font-semibold text-base hover:bg-white/[0.1] transition-all duration-200 min-w-[180px]"
+              className="inline-flex items-center justify-center h-12 px-6 rounded-[14px] bg-[var(--surface-1)] text-[var(--ink-3)] border border-[var(--line-2)] font-medium text-base hover:bg-[var(--surface-2)] transition-colors focus-ring min-w-[180px]"
             >
-              Live Demo
+              Live demo
             </Link>
           </div>
-        </FadeInSection>
+        </Reveal>
       </section>
 
       {/* Features */}
-      <section id="features" className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <FadeInSection>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
-              Everything you need to launch
+      <section id="features" className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <Reveal>
+          <div className="max-w-xl mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.06em] text-[var(--accent)] mb-3">
+              What's in the box
+            </p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.015em] text-[var(--ink-3)]">
+              Everything you need to launch.
             </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              Stop rebuilding authentication, payments, and admin panels. Start with everything already wired up.
+            <p className="mt-3 text-[var(--ink-1)] text-base">
+              Stop rebuilding authentication, payments, and admin panels.
+              Start with everything already wired up.
             </p>
           </div>
-        </FadeInSection>
+        </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {features.map((f, i) => (
-            <FadeInSection key={f.title} delay={i * 80}>
-              <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-6 hover:bg-white/[0.07] hover:border-white/[0.1] transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5 h-full">
-                <div className="text-3xl mb-4">{f.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-100 mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{f.description}</p>
+            <Reveal key={f.title} delay={i * 60}>
+              <div className="h-full rounded-[20px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6 transition-colors hover:border-[var(--line-2)]">
+                <h3 className="text-base font-semibold text-[var(--ink-3)] tracking-tight mb-2">
+                  {f.title}
+                </h3>
+                <p className="text-sm text-[var(--ink-1)] leading-relaxed">
+                  {f.description}
+                </p>
               </div>
-            </FadeInSection>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* What's Included */}
-      <section id="included" className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <FadeInSection>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
-              What&apos;s included
+      {/* What's included */}
+      <section id="included" className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <Reveal>
+          <div className="max-w-xl mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.06em] text-[var(--accent)] mb-3">
+              Detailed scope
+            </p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.015em] text-[var(--ink-3)]">
+              The full inventory.
             </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              A detailed look at every feature packed into the starter kit.
+            <p className="mt-3 text-[var(--ink-1)] text-base">
+              A look at every feature packed into the starter.
             </p>
           </div>
-        </FadeInSection>
+        </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {includedItems.map((group, i) => (
-            <FadeInSection key={group.category} delay={i * 80}>
-              <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-6 h-full">
-                <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">
+            <Reveal key={group.category} delay={i * 60}>
+              <div className="h-full rounded-[20px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+                <h3 className="text-[11px] font-semibold text-[var(--ink-1)] uppercase tracking-[0.06em] mb-4">
                   {group.category}
                 </h3>
                 <ul className="space-y-2.5">
                   {group.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-gray-300">
-                      <svg className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-sm text-[var(--ink-2)]"
+                    >
+                      <svg
+                        className="w-4 h-4 text-[var(--accent)] flex-shrink-0 mt-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                       {item}
@@ -217,95 +299,101 @@ export default function LandingPage() {
                   ))}
                 </ul>
               </div>
-            </FadeInSection>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section id="stack" className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <FadeInSection>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
-              Built with modern tools
-            </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              A carefully chosen stack that scales from side project to production.
+      {/* Tech stack */}
+      <section id="stack" className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <Reveal>
+          <div className="max-w-xl mx-auto text-center mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.06em] text-[var(--accent)] mb-3">
+              Stack
             </p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.015em] text-[var(--ink-3)]">
+              Built on the boring stack you already trust.
+            </h2>
           </div>
-        </FadeInSection>
+        </Reveal>
 
-        <FadeInSection delay={100}>
-          <div className="flex flex-wrap justify-center gap-4 max-w-3xl mx-auto">
+        <Reveal delay={80}>
+          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
             {techStack.map((tech) => (
               <div
                 key={tech.name}
-                className="bg-white/[0.04] backdrop-blur-xl rounded-xl border border-white/[0.06] px-5 py-3 hover:bg-white/[0.07] hover:border-white/[0.1] transition-all duration-300"
+                className="rounded-[12px] border border-[var(--line-1)] bg-[var(--surface-1)] px-4 py-2.5 transition-colors hover:border-[var(--line-2)]"
               >
-                <p className="text-sm font-medium text-gray-200">{tech.name}</p>
-                <p className="text-[11px] text-gray-500">{tech.category}</p>
+                <p className="text-sm font-medium text-[var(--ink-3)]">{tech.name}</p>
+                <p className="text-[11px] text-[var(--ink-1)]">{tech.category}</p>
               </div>
             ))}
           </div>
-        </FadeInSection>
+        </Reveal>
       </section>
 
-      {/* Getting Started */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <FadeInSection>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
-              Up and running in minutes
+      {/* Getting started */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <Reveal>
+          <div className="max-w-xl mx-auto text-center mb-12">
+            <p className="text-xs font-medium uppercase tracking-[0.06em] text-[var(--accent)] mb-3">
+              Setup
+            </p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.015em] text-[var(--ink-3)]">
+              Up and running in minutes.
             </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            <p className="mt-3 text-[var(--ink-1)] text-base">
               Four commands and you have a fully functional SaaS app.
             </p>
           </div>
-        </FadeInSection>
+        </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl mx-auto">
           {steps.map((s, i) => (
-            <FadeInSection key={s.step} delay={i * 100}>
-              <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-6 text-center h-full">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-emerald-400 font-bold text-sm">{s.step}</span>
+            <Reveal key={s.step} delay={i * 80}>
+              <div className="h-full rounded-[20px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+                <div className="text-xs font-mono font-semibold text-[var(--ink-1)] mb-3">
+                  {s.step}
                 </div>
-                <h3 className="text-base font-semibold text-gray-100 mb-2">{s.title}</h3>
-                <code className="text-xs text-gray-400 bg-white/[0.06] px-2 py-1 rounded-lg font-mono">
+                <h3 className="text-base font-semibold text-[var(--ink-3)] tracking-tight mb-3">
+                  {s.title}
+                </h3>
+                <code className="block text-[12px] text-[var(--ink-2)] bg-[var(--surface-2)] px-3 py-2 rounded-[10px] font-mono break-all">
                   {s.command}
                 </code>
               </div>
-            </FadeInSection>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <FadeInSection>
-          <div className="bg-gradient-to-br from-emerald-500/[0.08] to-teal-500/[0.05] backdrop-blur-xl rounded-3xl border border-emerald-500/20 p-8 md:p-16 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
-              Stop rebuilding the same infrastructure
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 md:py-24">
+        <Reveal>
+          <div className="rounded-[28px] border border-[var(--line-2)] bg-[var(--surface-1)] p-10 md:p-16 text-center shadow-[var(--shadow-2)]">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.015em] text-[var(--ink-3)] mb-4">
+              Stop rebuilding the same infrastructure.
             </h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-              Start building your product. Auth, payments, admin, blog, and deployment are already done.
+            <p className="text-[var(--ink-1)] text-base mb-8 max-w-xl mx-auto">
+              Start building your product. Auth, payments, admin, blog, and
+              deployment are already done.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="https://github.com"
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold text-base shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transition-all duration-200"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-[14px] bg-[var(--ink-3)] text-[var(--surface-0)] font-medium text-base hover:bg-[var(--ink-2)] transition-colors focus-ring"
               >
-                Get Started for Free
+                Get started for free
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center px-8 py-4 bg-white/[0.06] text-gray-300 border border-white/[0.08] rounded-xl font-semibold text-base hover:bg-white/[0.1] transition-all duration-200"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-[14px] bg-[var(--surface-2)] text-[var(--ink-3)] border border-[var(--line-2)] font-medium text-base hover:bg-[var(--surface-3)] transition-colors focus-ring"
               >
-                Try the Demo
+                Try the demo
               </Link>
             </div>
           </div>
-        </FadeInSection>
+        </Reveal>
       </section>
 
       <MarketingFooter />

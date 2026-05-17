@@ -19,47 +19,68 @@ export default function ForgotPasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-    } catch {}
+    } catch {
+      // We intentionally swallow errors here: the server always returns 200
+      // to avoid leaking whether an account exists for the address.
+    }
     setLoading(false);
     setSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-4 relative overflow-hidden">
-      <div className="w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl absolute -top-20 -right-20" />
-      <div className="w-80 h-80 bg-teal-500/[0.08] rounded-full blur-3xl absolute -bottom-10 -left-10" />
+    <div className="min-h-screen flex items-center justify-center bg-[var(--surface-0)] p-4 relative overflow-hidden">
+      <div className="bg-mesh" />
 
-      <div className="w-full max-w-md bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.06] p-8 relative z-10 animate-scale-in shadow-2xl shadow-black/20">
+      <div className="w-full max-w-[420px] rounded-[24px] border border-[var(--line-1)] bg-[var(--surface-1)] p-8 relative z-10 animate-scale-in shadow-[var(--shadow-3)]">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[14px] bg-[var(--surface-2)] mb-5">
+            <svg
+              className="w-5 h-5 text-[var(--ink-2)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.6}
+            >
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 1 1 8 0v3" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-100">
+          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
             Forgot password?
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Enter your email and we will send you a reset link
+          <p className="text-sm text-[var(--ink-1)] mt-1.5">
+            Enter your email and we'll send a reset link.
           </p>
         </div>
 
         {submitted ? (
-          <div className="space-y-6">
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-              <svg className="w-10 h-10 text-emerald-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          <div className="space-y-5">
+            <div
+              role="status"
+              className="rounded-[14px] border border-[var(--line-2)] bg-[var(--accent-soft)] p-5 text-center"
+            >
+              <svg
+                className="w-8 h-8 text-[var(--accent)] mx-auto mb-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.6}
+              >
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 6 9-6" />
               </svg>
-              <p className="text-sm text-emerald-300 font-medium">Check your email</p>
-              <p className="text-sm text-gray-400 mt-1">
-                If an account exists with that email, we have sent a password reset link.
+              <p className="text-sm font-medium text-[var(--ink-3)]">
+                Check your email
+              </p>
+              <p className="text-sm text-[var(--ink-1)] mt-1 leading-relaxed">
+                If an account exists with that email, a reset link is on its way.
               </p>
             </div>
             <Link
               href="/login"
-              className="block text-center text-sm text-emerald-400 hover:text-emerald-300 font-medium"
+              className="block text-center text-sm text-[var(--ink-2)] hover:text-[var(--ink-3)] transition-colors"
             >
-              Back to login
+              ← Back to sign in
             </Link>
           </div>
         ) : (
@@ -70,14 +91,24 @@ export default function ForgotPasswordPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
+              autoComplete="email"
               required
             />
-            <Button type="submit" className="w-full" size="lg">
-              Send Reset Link
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              size="lg"
+              loading={loading}
+            >
+              {loading ? "Sending..." : "Send reset link"}
             </Button>
-            <p className="text-center text-sm text-gray-500">
-              Remember your password?{" "}
-              <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">
+            <p className="text-center text-sm text-[var(--ink-1)]">
+              Remembered it?{" "}
+              <Link
+                href="/login"
+                className="text-[var(--ink-3)] hover:text-[var(--accent)] font-medium transition-colors"
+              >
                 Sign in
               </Link>
             </p>

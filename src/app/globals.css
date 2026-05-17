@@ -1,221 +1,391 @@
 @import "tailwindcss";
 
+/* ============================================================
+ * Design tokens
+ * ============================================================
+ *
+ * Dark-first palette (the app defaults to dark via next-themes).
+ * The constraint: black/white as the strong ends, four grays as the
+ * scaffold, green and amber as accents only.
+ *
+ * - --surface-N: backgrounds, from deepest (page) to highest (popover)
+ * - --line-N:   borders, hairline -> heavy
+ * - --ink-N:    text, from softest -> strongest
+ * - --accent:   the single primary accent (green). Hover/active variants.
+ * - --warn:     amber for warnings, never for primary actions.
+ *
+ * Radius scale jumps in halves for visible rhythm:
+ *   xs 6 / sm 10 / md 14 / lg 20 / xl 28 / 2xl 36
+ *
+ * Shadows are deep but very low opacity. They earn their keep in dark
+ * mode by reading as "light coming from above" rather than "dropshadow."
+ */
+:root {
+  /* Light mode tokens. Not the default but cleanly switchable. */
+  --surface-0: #ffffff;
+  --surface-1: #fafafa;
+  --surface-2: #f4f4f5;
+  --surface-3: #e9e9eb;
+
+  --line-1: rgba(15, 15, 20, 0.06);
+  --line-2: rgba(15, 15, 20, 0.10);
+  --line-3: rgba(15, 15, 20, 0.18);
+
+  --ink-1: #71717a;
+  --ink-2: #3f3f46;
+  --ink-3: #18181b;
+
+  --accent:        #16a34a;
+  --accent-strong: #15803d;
+  --accent-soft:   rgba(22, 163, 74, 0.10);
+  --accent-ring:   rgba(22, 163, 74, 0.30);
+
+  --warn:        #d97706;
+  --warn-soft:   rgba(217, 119, 6, 0.10);
+
+  --danger:      #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.08);
+
+  --shadow-1: 0 1px 2px rgba(15, 15, 20, 0.04), 0 1px 1px rgba(15, 15, 20, 0.02);
+  --shadow-2: 0 8px 24px -8px rgba(15, 15, 20, 0.10), 0 2px 6px -2px rgba(15, 15, 20, 0.06);
+  --shadow-3: 0 24px 60px -20px rgba(15, 15, 20, 0.16), 0 8px 24px -8px rgba(15, 15, 20, 0.08);
+}
+
+.dark {
+  --surface-0: #09090b;
+  --surface-1: #0f0f12;
+  --surface-2: #16161a;
+  --surface-3: #1f1f24;
+
+  --line-1: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.10);
+  --line-3: rgba(255, 255, 255, 0.16);
+
+  --ink-1: #a1a1aa;
+  --ink-2: #d4d4d8;
+  --ink-3: #fafafa;
+
+  --accent:        #4ade80;
+  --accent-strong: #22c55e;
+  --accent-soft:   rgba(74, 222, 128, 0.10);
+  --accent-ring:   rgba(74, 222, 128, 0.35);
+
+  --warn:        #fbbf24;
+  --warn-soft:   rgba(251, 191, 36, 0.10);
+
+  --danger:      #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.10);
+
+  /* Shadows in dark mode lift surfaces by simulating ambient light from
+   * above rather than a hard drop, so they read as depth instead of as
+   * "drop shadow on black." */
+  --shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-2:
+    0 8px 24px -8px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-3:
+    0 24px 60px -20px rgba(0, 0, 0, 0.60),
+    0 8px 24px -8px rgba(0, 0, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Default to dark, per project convention. next-themes will manage the
+ * class toggle but the root assumes dark so first paint matches. */
+html { color-scheme: dark; }
+
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
-    @apply bg-[#0a0a0f] text-gray-100;
+    background: var(--surface-0);
+    color: var(--ink-2);
     min-height: 100vh;
+    font-feature-settings: "ss01", "ss02", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
+  /* Subtle scrollbar, theme-aware. */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    background: var(--line-2);
+    border-radius: 8px;
   }
+  ::-webkit-scrollbar-thumb:hover { background: var(--line-3); }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+  /* Selection inherits the accent so highlights feel intentional. */
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--ink-3);
   }
 }
 
-/* Background mesh gradient */
+/* ============================================================
+ * Layered surfaces (the "Apple Liquid Glass" cue, dialed down)
+ * ============================================================
+ * Use these utility classes when you want a panel that reads as a
+ * sculpted layer rather than a flat rectangle. The point is the soft
+ * top-edge highlight, not a gimmicky blur.
+ */
+.surface-1 {
+  background: var(--surface-1);
+  border: 1px solid var(--line-1);
+  box-shadow: var(--shadow-1);
+}
+.surface-2 {
+  background: var(--surface-2);
+  border: 1px solid var(--line-1);
+  box-shadow: var(--shadow-2);
+}
+.surface-3 {
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-3);
+}
+
+/* A focus ring used everywhere interactive. Two-rim ring so it shows
+ * against both the surface and the page. */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--surface-0),
+    0 0 0 4px var(--accent-ring);
+}
+
+/* ============================================================
+ * Motion
+ * ============================================================
+ * Short, restrained. Apple-style: 200-280ms, ease-out, never bounce.
+ * Respect prefers-reduced-motion at every entry. */
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-up { animation: slide-up 240ms cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-fade-in  { animation: fade-in  220ms cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-scale-in { animation: scale-in 180ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+ * Backwards-compat aliases
+ * ============================================================
+ * A handful of legacy classes that the old palette/landing pages used.
+ * Kept here so the refactor can land without immediately breaking
+ * every random utility consumer. They forward to the new tokens. */
 .bg-mesh {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
 }
-
 .bg-mesh::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(ellipse at 20% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 20%, rgba(20, 184, 166, 0.04) 0%, transparent 50%),
-              radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+  inset: -50%;
+  background:
+    radial-gradient(ellipse at 22% 30%, var(--accent-soft) 0%, transparent 55%),
+    radial-gradient(ellipse at 78% 70%, rgba(120, 120, 120, 0.04) 0%, transparent 55%);
 }
 
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.4s ease-out;
-}
-
-.animate-scale-in {
-  animation: scale-in 0.2s ease-out;
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-/* Premium range slider */
+/* ============================================================
+ * Range slider (settings)
+ * ============================================================ */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line-2);
   outline: none;
 }
-
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #14b8a6);
+  background: var(--accent);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
-  transition: transform 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-}
-
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.10); }
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #14b8a6);
+  background: var(--accent);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30);
 }
 
-/* Blog callouts */
+/* ============================================================
+ * Blog content typography
+ * ============================================================
+ * The prose styles for markdown-rendered blog posts. Lifted into
+ * design tokens so light + dark both work. */
+
+.blog-content h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line-1);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.blog-content h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+.blog-content p {
+  color: var(--ink-1);
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
+}
+.blog-content ul, .blog-content ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+.blog-content li {
+  color: var(--ink-1);
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+}
+.blog-content strong {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.blog-content a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 160ms ease-out;
+}
+.blog-content a:hover { border-bottom-color: var(--accent); }
+.blog-content blockquote {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 16px 20px;
+  border-radius: 0 14px 14px 0;
+  margin: 24px 0;
+  font-style: italic;
+  color: var(--ink-2);
+}
+.blog-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--accent);
+}
+.blog-content :not(pre) > code {
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.875em;
+}
+.blog-content pre {
+  background: var(--surface-1);
+  border: 1px solid var(--line-1);
+  border-radius: 14px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 13px;
+}
+.blog-content pre code {
+  background: none;
+  padding: 0;
+  color: var(--ink-2);
+}
+.blog-content hr {
+  border: none;
+  height: 1px;
+  background: var(--line-1);
+  margin: 40px 0;
+}
+.blog-content img {
+  border-radius: 14px;
+  border: 1px solid var(--line-1);
+}
+
+/* Blog callouts (markdown plugin output). */
 .callout {
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 16px 20px;
   margin: 24px 0;
-  border-left: 4px solid;
+  border-left: 3px solid;
 }
 .callout-tip {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: #10b981;
-  color: #a7f3d0;
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--ink-2);
 }
 .callout-warning {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: #f59e0b;
-  color: #fde68a;
+  background: var(--warn-soft);
+  border-color: var(--warn);
+  color: var(--ink-2);
 }
 .callout-info {
-  background: rgba(59, 130, 246, 0.08);
-  border-color: #3b82f6;
-  color: #bfdbfe;
+  background: var(--surface-2);
+  border-color: var(--line-3);
+  color: var(--ink-2);
 }
 
-/* Stat cards */
+/* Stat / comparison helpers used in long-form posts. */
 .stat-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--line-1);
+  border-radius: 18px;
   padding: 24px;
   text-align: center;
   margin: 24px 0;
 }
 .stat-number {
   font-size: 48px;
-  font-weight: 800;
-  background: linear-gradient(to right, #10b981, #14b8a6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink-3);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 .stat-label {
-  color: #9ca3af;
+  color: var(--ink-1);
   font-size: 14px;
   margin-top: 8px;
 }
 
-/* Key points */
-.key-point {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 184, 166, 0.05));
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin: 24px 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: #d1fae5;
-  position: relative;
-}
-.key-point::before {
-  content: "\01F4A1";
-  font-size: 24px;
-  margin-right: 12px;
-}
-
-/* Comparison boxes */
 .comparison-box {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -223,155 +393,31 @@ input[type="range"]::-moz-range-thumb {
   margin: 24px 0;
 }
 .comparison-col {
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line-1);
+  background: var(--surface-1);
 }
-.comparison-col.good {
-  background: rgba(16, 185, 129, 0.06);
-  border-color: rgba(16, 185, 129, 0.15);
-}
-.comparison-col.good h4 {
-  color: #10b981;
-}
-.comparison-col.bad {
-  background: rgba(239, 68, 68, 0.06);
-  border-color: rgba(239, 68, 68, 0.15);
-}
-.comparison-col.bad h4 {
-  color: #ef4444;
-}
+.comparison-col.good { border-color: var(--accent-ring); background: var(--accent-soft); }
+.comparison-col.good h4 { color: var(--accent); }
+.comparison-col.bad  { border-color: rgba(248, 113, 113, 0.30); background: var(--danger-soft); }
+.comparison-col.bad h4 { color: var(--danger); }
 .comparison-col h4 {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.comparison-col ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.comparison-col ul { list-style: none; padding: 0; margin: 0; }
 .comparison-col ul li {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--ink-1);
   padding: 4px 0;
 }
-.comparison-col.good ul li::before {
-  content: "\2713 ";
-  color: #10b981;
-}
-.comparison-col.bad ul li::before {
-  content: "\2717 ";
-  color: #ef4444;
-}
+.comparison-col.good ul li::before { content: "\2713 "; color: var(--accent); }
+.comparison-col.bad  ul li::before { content: "\2717 "; color: var(--danger); }
 
-/* Better prose for blog */
-.blog-content h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #f3f4f6;
-  margin-top: 3rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  line-height: 1.3;
-}
-
-.blog-content h3 {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
-}
-
-.blog-content p {
-  color: #9ca3af;
-  line-height: 1.8;
-  margin-bottom: 1.25rem;
-}
-
-.blog-content ul, .blog-content ol {
-  margin: 1rem 0;
-  padding-left: 1.5rem;
-}
-
-.blog-content li {
-  color: #9ca3af;
-  line-height: 1.7;
-  margin-bottom: 0.5rem;
-}
-
-.blog-content strong {
-  color: #e5e7eb;
-  font-weight: 600;
-}
-
-.blog-content a {
-  color: #34d399;
-  text-decoration: none;
-}
-
-.blog-content a:hover {
-  text-decoration: underline;
-}
-
-.blog-content blockquote {
-  border-left: 3px solid #10b981;
-  background: rgba(16, 185, 129, 0.05);
-  padding: 16px 20px;
-  border-radius: 0 12px 12px 0;
-  margin: 24px 0;
-  font-style: italic;
-  color: #d1d5db;
-}
-
-.blog-content code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #34d399;
-}
-
-.blog-content :not(pre) > code {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.875em;
-}
-
-.blog-content pre {
-  background: #0d0d1a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.25rem;
-  overflow-x: auto;
-  margin: 1.5rem 0;
-  font-size: 13px;
-}
-
-.blog-content pre code {
-  background: none;
-  padding: 0;
-  color: #d1d5db;
-}
-
-.blog-content hr {
-  border: none;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
-  margin: 40px 0;
-}
-
-.blog-content img {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* Responsive comparison */
 @media (max-width: 640px) {
-  .comparison-box {
-    grid-template-columns: 1fr;
-  }
+  .comparison-box { grid-template-columns: 1fr; }
 }

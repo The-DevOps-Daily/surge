@@ -18,9 +18,61 @@ interface SystemHealth {
   envVars: Record<string, boolean | string | undefined>;
 }
 
+function StatusCard({
+  label,
+  status,
+  detail,
+  goodValues,
+}: {
+  label: string;
+  status: string;
+  detail?: string;
+  goodValues: string[];
+}) {
+  const isGood = goodValues.includes(status);
+  return (
+    <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className={`w-2 h-2 rounded-full ${
+            isGood ? "bg-[var(--accent)]" : "bg-[var(--danger)]"
+          }`}
+        />
+        <p className="text-[11px] uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium">
+          {label}
+        </p>
+      </div>
+      <p
+        className={`text-lg font-semibold capitalize tracking-[-0.005em] ${
+          isGood ? "text-[var(--accent)]" : "text-[var(--danger)]"
+        }`}
+      >
+        {status}
+      </p>
+      {detail && (
+        <p className="text-xs text-[var(--ink-1)] mt-1">{detail}</p>
+      )}
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between py-2 px-3 rounded-[10px] bg-[var(--surface-2)] border border-[var(--line-1)]">
+      <span className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium">
+        {label}
+      </span>
+      <span className="text-sm text-[var(--ink-3)] font-medium tabular-nums">
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export default function AdminSystemPage() {
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/system")
@@ -29,21 +81,26 @@ export default function AdminSystemPage() {
         setHealth(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-gray-500">Loading system info...</div>
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-12 text-center">
+        <p className="text-sm text-[var(--ink-1)]">Loading system info...</p>
       </div>
     );
   }
 
-  if (!health) {
+  if (error || !health) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-red-400">Failed to load system health.</div>
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--danger-soft)] p-12 text-center">
+        <p className="text-sm text-[var(--danger)] font-medium">
+          Failed to load system health.
+        </p>
       </div>
     );
   }
@@ -51,13 +108,14 @@ export default function AdminSystemPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-gray-100">System Health</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Service status and environment info
+        <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
+          System health
+        </h1>
+        <p className="text-sm text-[var(--ink-1)] mt-1.5">
+          Service status and environment info.
         </p>
       </div>
 
-      {/* Service Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatusCard
           label="Database"
@@ -82,102 +140,61 @@ export default function AdminSystemPage() {
         />
       </div>
 
-      {/* System Info */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-gray-300 mb-4">
-          System Information
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+        <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium mb-4">
+          System information
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <InfoRow label="Runtime" value={health.system.runtime} />
           <InfoRow label="Environment" value={health.system.environment} />
           <InfoRow
-            label="Database Provider"
+            label="DB provider"
             value={health.services.database.provider}
           />
-          <InfoRow
-            label="Database Size"
-            value={health.services.database.size}
-          />
+          <InfoRow label="DB size" value={health.services.database.size} />
           <InfoRow label="Uptime" value={health.system.uptime} />
           <InfoRow
-            label="Total Users"
-            value={String(health.system.totalUsers)}
+            label="Total users"
+            value={health.system.totalUsers.toLocaleString()}
           />
         </div>
       </div>
 
-      {/* Environment Variables */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-gray-300 mb-4">
-          Environment Variables
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+        <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium mb-4">
+          Environment variables
         </h2>
-        <div className="space-y-2">
-          {Object.entries(health.envVars).map(([key, value]) => (
-            <div
-              key={key}
-              className="flex items-center justify-between py-2 border-b border-white/[0.04]"
-            >
-              <code className="text-sm text-gray-400 font-mono">{key}</code>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  value === true || (typeof value === "string" && value !== "")
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : "bg-rose-500/20 text-rose-400"
-                }`}
+        <div className="divide-y divide-[var(--line-1)]">
+          {Object.entries(health.envVars).map(([key, value]) => {
+            const configured =
+              value === true || (typeof value === "string" && value !== "");
+            return (
+              <div
+                key={key}
+                className="flex items-center justify-between py-2.5"
               >
-                {value === true || (typeof value === "string" && value !== "")
-                  ? "Configured"
-                  : "Missing"}
-              </span>
-            </div>
-          ))}
+                <code className="text-sm text-[var(--ink-2)] font-mono">
+                  {key}
+                </code>
+                <span
+                  className={`inline-flex items-center gap-1.5 text-[11px] px-2 h-6 rounded-full font-medium ${
+                    configured
+                      ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                      : "bg-[var(--danger-soft)] text-[var(--danger)]"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      configured ? "bg-[var(--accent)]" : "bg-[var(--danger)]"
+                    }`}
+                  />
+                  {configured ? "Configured" : "Missing"}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatusCard({
-  label,
-  status,
-  detail,
-  goodValues,
-}: {
-  label: string;
-  status: string;
-  detail?: string;
-  goodValues: string[];
-}) {
-  const isGood = goodValues.includes(status);
-  return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
-      <div className="flex items-center gap-2 mb-2">
-        <div
-          className={`w-2.5 h-2.5 rounded-full ${
-            isGood ? "bg-emerald-400 animate-pulse-glow" : "bg-rose-400"
-          }`}
-        />
-        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-          {label}
-        </p>
-      </div>
-      <p
-        className={`text-lg font-semibold capitalize ${
-          isGood ? "text-emerald-400" : "text-rose-400"
-        }`}
-      >
-        {status}
-      </p>
-      {detail && <p className="text-xs text-gray-500 mt-1">{detail}</p>}
-    </div>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/[0.02]">
-      <span className="text-sm text-gray-500">{label}</span>
-      <span className="text-sm text-gray-300 font-medium">{value}</span>
     </div>
   );
 }

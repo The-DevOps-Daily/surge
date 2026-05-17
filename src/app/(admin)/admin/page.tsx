@@ -20,7 +20,12 @@ interface AdminStats {
   familySubscribers: number;
   mrr: number;
   emailSubscribers: number;
-  emailSubscriberList: { id: string; email: string; name: string | null; tier: string }[];
+  emailSubscriberList: {
+    id: string;
+    email: string;
+    name: string | null;
+    tier: string;
+  }[];
   signupsByDay: { date: string; count: number }[];
   tierDistribution: { name: string; value: number }[];
   recentSignups: {
@@ -32,11 +37,72 @@ interface AdminStats {
   }[];
 }
 
-const PIE_COLORS = ["#6b7280", "#8b5cf6", "#a78bfa"];
+const PIE_COLORS = [
+  "var(--surface-3)",
+  "var(--warn)",
+  "var(--ink-3)",
+  "var(--accent)",
+];
+
+function tierClass(tier: string) {
+  if (tier === "pro")
+    return "bg-[var(--warn-soft)] text-[var(--warn)]";
+  if (tier === "family")
+    return "bg-[var(--accent-soft)] text-[var(--accent)]";
+  return "bg-[var(--surface-2)] text-[var(--ink-1)] border border-[var(--line-1)]";
+}
+
+function StatCard({
+  label,
+  value,
+  growth,
+  isCurrency,
+}: {
+  label: string;
+  value: number | string;
+  growth?: number;
+  isCurrency?: boolean;
+}) {
+  return (
+    <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-5">
+      <p className="text-[11px] uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium">
+        {label}
+      </p>
+      <div className="flex items-end gap-2 mt-2">
+        <p className="text-2xl font-semibold tracking-[-0.02em] text-[var(--ink-3)] tabular-nums">
+          {typeof value === "number" && !isCurrency
+            ? value.toLocaleString()
+            : value}
+        </p>
+        {growth !== undefined && (
+          <span
+            className={`text-xs font-medium mb-1 ${
+              growth >= 0 ? "text-[var(--accent)]" : "text-[var(--danger)]"
+            }`}
+          >
+            {growth >= 0 ? "+" : ""}
+            {growth}%
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TierBadge({ tier }: { tier: string }) {
+  return (
+    <span
+      className={`inline-flex items-center text-[11px] px-2 h-5 rounded-full font-medium ${tierClass(tier)}`}
+    >
+      {tier.charAt(0).toUpperCase() + tier.slice(1)}
+    </span>
+  );
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/stats")
@@ -45,21 +111,26 @@ export default function AdminDashboard() {
         setStats(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-gray-500">Loading stats...</div>
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-12 text-center">
+        <p className="text-sm text-[var(--ink-1)]">Loading stats...</p>
       </div>
     );
   }
 
-  if (!stats) {
+  if (error || !stats) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-red-400">Failed to load admin stats.</div>
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--danger-soft)] p-12 text-center">
+        <p className="text-sm text-[var(--danger)] font-medium">
+          Failed to load admin stats.
+        </p>
       </div>
     );
   }
@@ -67,70 +138,66 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-gray-100">Admin Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Overview of your SaaS platform
+        <h1 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--ink-3)]">
+          Admin dashboard
+        </h1>
+        <p className="text-sm text-[var(--ink-1)] mt-1.5">
+          Overview of your SaaS platform.
         </p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
-          label="Total Users"
+          label="Total users"
           value={stats.totalUsers}
           growth={stats.userGrowth}
         />
-        <StatCard label="Pro Subscribers" value={stats.proSubscribers} />
-        <StatCard label="Team Subscribers" value={stats.familySubscribers} />
-        <StatCard
-          label="MRR"
-          value={`$${stats.mrr.toFixed(2)}`}
-          isCurrency
-        />
-        <StatCard label="Email Subscribers" value={stats.emailSubscribers || 0} />
+        <StatCard label="Pro subscribers" value={stats.proSubscribers} />
+        <StatCard label="Team subscribers" value={stats.familySubscribers} />
+        <StatCard label="MRR" value={`$${stats.mrr.toFixed(2)}`} isCurrency />
+        <StatCard label="Email subscribers" value={stats.emailSubscribers || 0} />
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Signups Bar Chart */}
-        <div className="lg:col-span-2 bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-          <h2 className="text-sm font-semibold text-gray-300 mb-4">
-            User Signups (Last 30 Days)
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+          <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium mb-5">
+            Signups (last 30 days)
           </h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.signupsByDay}>
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "#6b7280", fontSize: 11 }}
+                  tick={{ fill: "var(--ink-1)", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#6b7280", fontSize: 11 }}
+                  tick={{ fill: "var(--ink-1)", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   allowDecimals={false}
                 />
                 <Tooltip
+                  cursor={{ fill: "var(--surface-2)" }}
                   contentStyle={{
-                    background: "#1a1a2e",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--line-2)",
                     borderRadius: "12px",
-                    color: "#e5e7eb",
-                    fontSize: 13,
+                    color: "var(--ink-3)",
+                    fontSize: 12,
+                    boxShadow: "var(--shadow-2)",
                   }}
                 />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="var(--warn)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Tier Distribution Pie Chart */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-          <h2 className="text-sm font-semibold text-gray-300 mb-4">
-            Tier Distribution
+        <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] p-6">
+          <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium mb-5">
+            Tier distribution
           </h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -155,11 +222,12 @@ export default function AdminDashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "#1a1a2e",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--line-2)",
                     borderRadius: "12px",
-                    color: "#e5e7eb",
-                    fontSize: 13,
+                    color: "var(--ink-3)",
+                    fontSize: 12,
+                    boxShadow: "var(--shadow-2)",
                   }}
                 />
               </PieChart>
@@ -168,40 +236,41 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Signups */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-        <h2 className="text-sm font-semibold text-gray-300 mb-4">
-          Recent Signups
-        </h2>
+      <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--line-1)]">
+          <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium">
+            Recent signups
+          </h2>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-gray-500 border-b border-white/[0.06]">
-                <th className="pb-3 font-medium">Email</th>
-                <th className="pb-3 font-medium">Name</th>
-                <th className="pb-3 font-medium">Tier</th>
-                <th className="pb-3 font-medium">Signed Up</th>
+              <tr className="text-left text-[var(--ink-1)] border-b border-[var(--line-1)]">
+                <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Email</th>
+                <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Name</th>
+                <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Tier</th>
+                <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Signed up</th>
               </tr>
             </thead>
             <tbody>
               {stats.recentSignups.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors"
+                  className="border-b border-[var(--line-1)] last:border-0 hover:bg-[var(--surface-2)]/50 transition-colors"
                 >
-                  <td className="py-3 text-gray-300">{user.email}</td>
-                  <td className="py-3 text-gray-400">{user.name || "-"}</td>
-                  <td className="py-3">
+                  <td className="px-6 py-3 text-[var(--ink-3)]">{user.email}</td>
+                  <td className="px-6 py-3 text-[var(--ink-2)]">{user.name || "-"}</td>
+                  <td className="px-6 py-3">
                     <TierBadge tier={user.tier} />
                   </td>
-                  <td className="py-3 text-gray-500">
+                  <td className="px-6 py-3 text-[var(--ink-1)] tabular-nums">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))}
               {stats.recentSignups.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="py-6 text-center text-gray-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-[var(--ink-1)]">
                     No users yet.
                   </td>
                 </tr>
@@ -209,34 +278,34 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
-      {/* Email Subscribers */}
+      </div>
+
       {stats.emailSubscriberList && stats.emailSubscriberList.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/[0.06]">
-            <h2 className="text-sm font-semibold text-gray-300">
-              Email Report Subscribers ({stats.emailSubscriberList.length})
+        <div className="rounded-[18px] border border-[var(--line-1)] bg-[var(--surface-1)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--line-1)]">
+            <h2 className="text-xs uppercase tracking-[0.06em] text-[var(--ink-1)] font-medium">
+              Email report subscribers ({stats.emailSubscriberList.length})
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 border-b border-white/[0.06]">
-                  <th className="px-6 py-3 font-medium">Email</th>
-                  <th className="px-6 py-3 font-medium">Name</th>
-                  <th className="px-6 py-3 font-medium">Tier</th>
+                <tr className="text-left text-[var(--ink-1)] border-b border-[var(--line-1)]">
+                  <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Email</th>
+                  <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Name</th>
+                  <th className="px-6 py-3 text-xs font-medium uppercase tracking-[0.05em]">Tier</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.emailSubscriberList.map((sub) => (
-                  <tr key={sub.id} className="border-b border-white/[0.03]">
-                    <td className="px-6 py-3 text-gray-300">{sub.email}</td>
-                    <td className="px-6 py-3 text-gray-400">{sub.name || "-"}</td>
+                  <tr
+                    key={sub.id}
+                    className="border-b border-[var(--line-1)] last:border-0"
+                  >
+                    <td className="px-6 py-3 text-[var(--ink-3)]">{sub.email}</td>
+                    <td className="px-6 py-3 text-[var(--ink-2)]">{sub.name || "-"}</td>
                     <td className="px-6 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        sub.tier === "pro" ? "bg-violet-500/20 text-violet-400" :
-                        sub.tier === "family" ? "bg-teal-500/20 text-teal-400" :
-                        "bg-gray-500/20 text-gray-400"
-                      }`}>{sub.tier}</span>
+                      <TierBadge tier={sub.tier} />
                     </td>
                   </tr>
                 ))}
@@ -245,57 +314,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-      </div>
     </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  growth,
-  isCurrency,
-}: {
-  label: string;
-  value: number | string;
-  growth?: number;
-  isCurrency?: boolean;
-}) {
-  return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
-      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-        {label}
-      </p>
-      <div className="flex items-end gap-2 mt-2">
-        <p className="text-2xl font-bold text-gray-100">
-          {typeof value === "number" && !isCurrency
-            ? value.toLocaleString()
-            : value}
-        </p>
-        {growth !== undefined && (
-          <span
-            className={`text-xs font-medium mb-1 ${growth >= 0 ? "text-emerald-400" : "text-rose-400"}`}
-          >
-            {growth >= 0 ? "+" : ""}
-            {growth}%
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function TierBadge({ tier }: { tier: string }) {
-  const colors: Record<string, string> = {
-    free: "bg-gray-500/20 text-gray-400",
-    pro: "bg-violet-500/20 text-violet-400",
-    family: "bg-purple-500/20 text-purple-400",
-  };
-  return (
-    <span
-      className={`text-xs px-2 py-0.5 rounded-full font-medium ${colors[tier] || colors.free}`}
-    >
-      {tier.charAt(0).toUpperCase() + tier.slice(1)}
-    </span>
   );
 }
