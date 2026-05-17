@@ -1,5 +1,9 @@
 # Surge
 
+<p align="center">
+  <img src="./.github/social-preview.png" alt="Surge — AI-first SaaS starter kit. Ship your SaaS in prompts, not months." width="100%" />
+</p>
+
 **An AI-first SaaS starter kit.**
 
 Surge ships with Claude Code skills, auto-trigger subagents, an MCP server, an OpenAPI spec, `.md` content routes, an `llms.txt` index, and a comprehensive `CLAUDE.md` — so when you (or your AI agent) extend it, you spend prompts shipping features instead of rediscovering conventions.
