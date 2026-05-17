@@ -1,0 +1,95 @@
+import Link from "next/link";
+import { getAllDocs } from "@/lib/docs";
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { seo } from "@/lib/seo";
+
+export const metadata = seo({
+  title: "Docs",
+  description:
+    "Documentation for the SaaS App starter kit — getting started, customization, and adding features.",
+  path: "/docs",
+});
+
+export default function DocsIndexPage() {
+  const docs = getAllDocs();
+
+  return (
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--ink-3)] relative overflow-hidden">
+      <div className="bg-mesh" />
+
+      <MarketingNav />
+
+      <section className="relative z-10 max-w-4xl mx-auto px-6 pt-20 pb-10 text-center">
+        <span className="inline-flex items-center h-7 px-3 rounded-full border border-[var(--line-1)] bg-[var(--surface-1)] text-[11px] uppercase tracking-[0.06em] text-[var(--ink-1)]">
+          Docs
+        </span>
+        <h1 className="mt-5 text-4xl md:text-5xl font-semibold tracking-[-0.02em] text-[var(--ink-3)]">
+          Documentation
+        </h1>
+        <p className="mt-4 text-lg text-[var(--ink-1)] max-w-xl mx-auto">
+          Everything you need to ship with the starter kit.
+        </p>
+      </section>
+
+      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-24">
+        {docs.length === 0 ? (
+          <div className="text-center py-20 rounded-[20px] border border-[var(--line-1)] bg-[var(--surface-1)]">
+            <p className="text-sm text-[var(--ink-1)]">
+              No docs yet. Add markdown files to{" "}
+              <code className="text-[var(--accent)] bg-[var(--accent-soft)] px-1.5 py-0.5 rounded text-xs font-mono">
+                content/docs/
+              </code>
+              .
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {docs.map((doc) => (
+              <Link
+                key={doc.slug}
+                href={`/docs/${doc.slug}`}
+                className="group block focus-ring rounded-[16px]"
+              >
+                <article className="h-full rounded-[16px] border border-[var(--line-1)] bg-[var(--surface-1)] p-5 transition-colors group-hover:border-[var(--line-2)] group-hover:bg-[var(--surface-2)]">
+                  <h2 className="text-base font-semibold text-[var(--ink-3)] tracking-[-0.005em] mb-1.5">
+                    {doc.title}
+                  </h2>
+                  {doc.description && (
+                    <p className="text-sm text-[var(--ink-1)] leading-relaxed">
+                      {doc.description}
+                    </p>
+                  )}
+                  <div className="mt-4 inline-flex items-center gap-1 text-xs text-[var(--ink-3)] font-medium group-hover:gap-1.5 transition-all">
+                    Read
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <p className="mt-12 text-center text-xs text-[var(--ink-1)]">
+          Need the raw markdown? Append{" "}
+          <code className="text-[var(--ink-2)] font-mono">.md</code> to any docs
+          URL.
+        </p>
+      </section>
+
+      <MarketingFooter />
+    </div>
+  );
+}

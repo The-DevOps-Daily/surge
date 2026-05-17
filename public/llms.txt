@@ -1,0 +1,41 @@
+# SaaS App
+
+> A production-ready, AI-first SaaS starter kit built on Next.js, Stripe, Prisma, and NextAuth. Comes with skills, subagents, an MCP server, and conventions docs so Claude (or any agentic IDE) can ship features in a few prompts instead of reverse-engineering the codebase first.
+
+This is the placeholder llms.txt that ships with the Surge SaaS starter kit. Replace the product copy below with your own once you've customized the kit (run `/customize` in Claude Code).
+
+## Documentation
+
+- [README](/README.md): project overview, quickstart, env vars, deployment
+- [Conventions for AI agents](/CLAUDE.md): primitives, rules, helpers, code style
+- [Cross-tool agent guide](/AGENTS.md): summary for Cursor, Aider, Continue, Codex
+- [OpenAPI spec](/api/openapi.json): introspectable API surface
+- [Prompt cookbook](/docs/prompts): proven prompts for common extensions
+
+## Product pages
+
+- [Landing](/): hero, features, pricing teaser
+- [Pricing](/pricing): plan tiers + FAQ
+- [Comparison](/compare): SaaS App vs alternatives
+- [Sample tool](/tools/sample-tool): example interactive free tool
+
+## Blog
+
+- [Blog index](/blog): all posts
+- Append `.md` to any blog post URL to get raw markdown (e.g. `/blog/getting-started.md`)
+
+## Docs
+
+- [Docs index](/docs): user-facing docs
+- Append `.md` to any docs URL to get raw markdown (e.g. `/docs/quickstart.md`)
+
+## Legal
+
+- [Privacy policy](/privacy)
+- [Terms of service](/terms)
+
+## Optional
+
+- [Full content bundle](/llms-full.txt): all docs + posts inlined for one-shot ingestion
+- [Sitemap](/sitemap.xml)
+- [robots.txt](/robots.txt)

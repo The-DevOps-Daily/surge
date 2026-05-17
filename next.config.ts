@@ -29,6 +29,15 @@ const config = withPWA({
       },
     ];
   },
+  // AI-friendly: any /blog/<slug>.md or /docs/<slug>.md URL returns the raw
+  // markdown source for that page. Lets AI agents fetch canonical content
+  // without parsing the HTML wrapper.
+  async rewrites() {
+    return [
+      { source: "/blog/:slug.md", destination: "/api/raw/blog/:slug" },
+      { source: "/docs/:slug.md", destination: "/api/raw/docs/:slug" },
+    ];
+  },
 } satisfies NextConfig);
 
 export default config;
