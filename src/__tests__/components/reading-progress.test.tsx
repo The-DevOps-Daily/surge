@@ -18,7 +18,7 @@ describe("ReadingProgress", () => {
 
     const progressBar = outerDiv.firstElementChild as HTMLElement;
     expect(progressBar).not.toBeNull();
-    expect(progressBar.className).toContain("bg-gradient-to-r");
+    expect(progressBar.className).toContain("bg-[var(--accent)]");
     // Initially progress should be 0%
     expect(progressBar.style.width).toBe("0%");
   });

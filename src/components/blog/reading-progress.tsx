@@ -1,5 +1,6 @@
-'use client';
-import { useState, useEffect } from 'react';
+"use client";
+
+import { useEffect, useState } from "react";
 
 export function ReadingProgress() {
   const [progress, setProgress] = useState(0);
@@ -7,17 +8,26 @@ export function ReadingProgress() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-transparent">
+    <div
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(progress)}
+      className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-transparent"
+    >
       <div
-        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-150"
+        className="h-full bg-[var(--accent)] transition-[width] duration-150 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>
