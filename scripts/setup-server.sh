@@ -41,8 +41,10 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_PRO_PRICE_ID=
 STRIPE_FAMILY_PRICE_ID=
 
-# Email (add when ready)
-RESEND_API_KEY=
+# Email — smtpfa.st (add when ready)
+SMTPFAST_API_KEY=
+SMTPFAST_API_URL=https://smtpfa.st
+SMTPFAST_FROM_EMAIL=
 
 # Analytics (add when ready)
 NEXT_PUBLIC_ANALYTICS_ID=

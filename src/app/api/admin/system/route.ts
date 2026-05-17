@@ -27,12 +27,12 @@ export async function GET() {
     STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
     STRIPE_PUBLISHABLE_KEY: !!process.env.STRIPE_PUBLISHABLE_KEY,
     STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
-    RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    SMTPFAST_API_KEY: !!process.env.SMTPFAST_API_KEY,
     REGISTRATION_ENABLED: process.env.REGISTRATION_ENABLED,
   };
 
   const stripeConfigured = !!process.env.STRIPE_SECRET_KEY;
-  const emailConfigured = !!process.env.RESEND_API_KEY;
+  const emailConfigured = !!process.env.SMTPFAST_API_KEY;
   const registrationEnabled = process.env.REGISTRATION_ENABLED !== "false";
 
   // Database size (SQLite)

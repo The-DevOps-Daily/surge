@@ -4,7 +4,7 @@
 
 Surge ships with Claude Code skills, auto-trigger subagents, an MCP server, an OpenAPI spec, `.md` content routes, an `llms.txt` index, and a comprehensive `CLAUDE.md` — so when you (or your AI agent) extend it, you spend prompts shipping features instead of rediscovering conventions.
 
-Under the hood it's a production-ready Next.js 16 + Stripe + Prisma + NextAuth + Resend stack with auth, payments, admin, blog, docs, and a dark-mode-first design system. Clone it, customize it, ship.
+Under the hood it's a production-ready Next.js 16 + Stripe + Prisma + NextAuth + smtpfa.st stack with auth, payments, admin, blog, docs, and a dark-mode-first design system. Clone it, customize it, ship.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-18181b.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
@@ -68,11 +68,11 @@ For a one-shot brand-only pass: `/customize --quick`.
 - **Blog engine** — markdown frontmatter, reading progress, TOC, share buttons, dynamic OG images, raw `.md` routes
 - **Docs engine** — same engine pointed at `content/docs/`, with prev/next navigation
 - **Dark-mode-first design system** — CSS-variable tokens, primitive components (Button, Input, Modal, ConfirmDialog, Toast), responsive
-- **Email** — Resend, light-friendly transactional templates with a shared scaffold
+- **Email** — smtpfa.st, light-friendly transactional templates with a shared scaffold
 
 ### Stack
 - Next.js 16 (App Router) · TypeScript · Tailwind 4 · Prisma + SQLite (dev) / Postgres (prod)
-- NextAuth v5 · Stripe · Resend · Recharts · Vitest · Docker Compose · GitHub Actions
+- NextAuth v5 · Stripe · smtpfa.st · Recharts · Vitest · Docker Compose · GitHub Actions
 
 ### MCP server
 
@@ -110,8 +110,9 @@ Copy `.env.example` to `.env` and fill in:
 | `NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID` | for payments | yearly Pro price |
 | `NEXT_PUBLIC_STRIPE_FAMILY_PRICE_ID` | for payments | monthly Team price |
 | `NEXT_PUBLIC_STRIPE_FAMILY_YEARLY_PRICE_ID` | for payments | yearly Team price |
-| `RESEND_API_KEY` | for email | from Resend dashboard |
-| `RESEND_FROM_EMAIL` | for email | `Your App <noreply@your-verified-domain.com>` |
+| `SMTPFAST_API_KEY` | for email | from https://smtpfa.st/api-keys with `email:send` scope |
+| `SMTPFAST_API_URL` | optional | defaults to `https://smtpfa.st`, override for staging/self-hosted |
+| `SMTPFAST_FROM_EMAIL` | for email | `Your App <noreply@your-verified-domain.com>` |
 
 ---
 

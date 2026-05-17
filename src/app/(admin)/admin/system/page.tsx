@@ -129,7 +129,7 @@ export default function AdminSystemPage() {
           goodValues={["configured"]}
         />
         <StatusCard
-          label="Email (Resend)"
+          label="Email (smtpfa.st)"
           status={health.services.email.status}
           goodValues={["configured"]}
         />

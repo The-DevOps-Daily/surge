@@ -54,7 +54,7 @@ After Tier 1 changes, run `npx tsc --noEmit` and `npm test`. Commit as `chore(cu
 ### 3. Tier 2 — Commerce (only if user confirms)
 
 - Walk through `src/lib/pricing.ts`. Ask which tiers they want (default: free + pro + team). Edit names, prices, features, CTAs.
-- Open `.env.example`. Show the Stripe vars (`STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_*_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `NEXTAUTH_SECRET`, `RESEND_API_KEY`). Offer to generate a fresh `NEXTAUTH_SECRET` via `openssl rand -base64 32`. Don't fill in real keys for the user — explain what each is and point at the Stripe/Resend dashboards.
+- Open `.env.example`. Show the Stripe vars (`STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_*_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `NEXTAUTH_SECRET`, `SMTPFAST_API_KEY`, `SMTPFAST_FROM_EMAIL`). Offer to generate a fresh `NEXTAUTH_SECRET` via `openssl rand -base64 32`. Don't fill in real keys for the user — explain what each is and point at the Stripe / smtpfa.st dashboards.
 - If a `.env.local` already exists, don't overwrite it. Just diff what's missing.
 
 Commit as `chore(customize): pricing + env scaffold`.
@@ -85,7 +85,7 @@ Commit as `feat(customize): wire <model> data model`.
 
 ### 6. Wrap-up
 
-Summarize what changed, what's left for the user to do (Stripe price IDs, real Resend domain, OAuth providers if they want them, etc.), and remind them about `/add-page`, `/add-api-route`, `/add-stripe-tier`, `/add-email` for further work.
+Summarize what changed, what's left for the user to do (Stripe price IDs, verified smtpfa.st sending domain, OAuth providers if they want them, etc.), and remind them about `/add-page`, `/add-api-route`, `/add-stripe-tier`, `/add-email` for further work.
 
 If they didn't change the README's "Built on Surge" link, leave it. If they explicitly want to remove the attribution, mention that the LICENSE just requires preserving the copyright line, not the marketing link.
 
