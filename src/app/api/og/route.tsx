@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") || "default";
 
   const isBlog = type === "blog";
+  const isDocs = type === "docs";
+  const badgeLabel = isBlog ? "Blog" : isDocs ? "Docs" : null;
 
   return new ImageResponse(
     (
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
           }}
         />
 
-        {isBlog && (
+        {badgeLabel && (
           <div
             style={{
               display: "flex",
@@ -90,7 +92,7 @@ export async function GET(request: NextRequest) {
                 textTransform: "uppercase",
               }}
             >
-              Blog
+              {badgeLabel}
             </span>
           </div>
         )}

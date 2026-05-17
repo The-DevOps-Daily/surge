@@ -6,6 +6,18 @@ import html from "remark-html";
 
 const DOCS_DIR = path.join(process.cwd(), "content/docs");
 
+// gray-matter parses YAML dates as Date objects. Normalize to a YYYY-MM-DD
+// string so the value is safe to render as a React child and to JSON-serialize.
+function normalizeDate(fromFrontmatter: unknown, fallback: Date): string {
+  if (typeof fromFrontmatter === "string" && fromFrontmatter.length > 0) {
+    return fromFrontmatter;
+  }
+  if (fromFrontmatter instanceof Date && !isNaN(fromFrontmatter.getTime())) {
+    return fromFrontmatter.toISOString().slice(0, 10);
+  }
+  return fallback.toISOString().slice(0, 10);
+}
+
 export interface DocPage {
   slug: string;
   title: string;
@@ -41,7 +53,7 @@ export function getAllDocs(): DocPageMeta[] {
       title: data.title || slug,
       description: data.description || "",
       order: typeof data.order === "number" ? data.order : 999,
-      updatedAt: data.updatedAt || stat.mtime.toISOString().slice(0, 10),
+      updatedAt: normalizeDate(data.updatedAt, stat.mtime),
     };
   });
 
