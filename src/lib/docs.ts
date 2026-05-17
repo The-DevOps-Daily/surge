@@ -77,7 +77,7 @@ export async function getDocBySlug(slug: string): Promise<DocPage | null> {
     order: typeof data.order === "number" ? data.order : 999,
     content: processed.toString(),
     rawMarkdown: fileContents,
-    updatedAt: data.updatedAt || stat.mtime.toISOString().slice(0, 10),
+    updatedAt: normalizeDate(data.updatedAt, stat.mtime),
   };
 }
 
